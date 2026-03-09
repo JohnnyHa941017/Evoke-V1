@@ -1,0 +1,139 @@
+"use client"
+
+import { useState, use } from "react"
+import { useRouter } from "next/navigation"
+import { Header } from "@/components/Header"
+import { LayoutContainer } from "@/components/LayoutContainer"
+import { StepPrompt } from "@/components/StepPrompt"
+import { ReflectionInput } from "@/components/ReflectionInput"
+import { ReflectionDisplay } from "@/components/ReflectionDisplay"
+import { PrimaryButton } from "@/components/PrimaryButton"
+import { REFLECTION_STEPS, TOTAL_STEPS } from "@/lib/prompts/reflectionPrompts"
+
+export default function ReflectionStepPage({
+  params,
+}: {
+  params: Promise<{ step: string }>
+}) {
+  const { step: stepParam } = use(params)
+  const stepNumber = parseInt(stepParam, 10)
+  const router = useRouter()
+
+  const [reflection, setReflection] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
+
+  if (!currentStep) {
+    router.push("/")
+    return null
+  }
+/*
+  async function handleSubmitReflection(input: string) {
+    setIsLoading(true);
+
+    const response = await fetch("/api/reflect", {
+      method: "POST",
+      body: JSON.stringify({
+        text: input,
+        stepNumber: stepNumber
+      }),
+    });
+
+    const data = await response.json();
+
+    setReflection(data.reflection);
+    setIsLoading(false);
+  }
+*/
+  async function handleSubmitReflection(input: string) {
+    setIsLoading(true)
+    try {
+      const sessionId = localStorage.getItem("evoke-session-id")
+      const res = await fetch("/api/reflect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          step: stepNumber,
+          input,
+        }),
+      })
+      const data = await res.json()
+      setReflection(data.reflection)
+    } catch {
+      setReflection("A moment of stillness occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function handleContinue() {
+    setIsSubmitting(true)
+    if (stepNumber < TOTAL_STEPS) {
+      setTimeout(() => {
+        router.push(`/reflect/${stepNumber + 1}`)
+      }, 3000);
+    } else {
+      router.push("/reorientation")
+    }
+  }
+
+  function handleBack() {
+    if (stepNumber > 1) {
+      router.push(`/reflect/${stepNumber - 1}`)
+    } else if(!stepNumber) {
+    //  router.push("/")
+    }
+  }
+
+  return (
+    <>
+      <Header />
+      <LayoutContainer>
+        <div className="flex flex-col">
+          {/* Step indicator */}
+          <div className="mb-12 flex items-center gap-3">
+            {REFLECTION_STEPS.map((s) => (
+              <div
+                key={s.step}
+                className={`h-px flex-1 ${
+                  s.step <= stepNumber ? "bg-foreground/30" : "bg-border"
+                }`}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+
+          <StepPrompt
+            label={`${currentStep.label} — Step ${stepNumber} of ${TOTAL_STEPS}`}
+            prompt={currentStep.prompt}
+          />
+
+          {!reflection ? (
+            <ReflectionInput
+              onSubmit={handleSubmitReflection}
+              isLoading={isLoading}
+              placeholder="Let the words come without direction..."
+              stepNumber={stepNumber}
+            />
+          ) : (
+            <div className="flex flex-col gap-8">
+              <ReflectionDisplay reflection={reflection} />
+              <div>
+                <PrimaryButton onClick={handleContinue} disabled={isSubmitting}>
+                  {stepNumber < TOTAL_STEPS ? "Continue" : "Move to closing"}
+                </PrimaryButton>
+                <PrimaryButton onClick={handleBack} disabled={stepNumber === 1}>
+                  Back
+                </PrimaryButton>
+              </div>
+            </div>
+          )}
+          
+        </div>
+      </LayoutContainer>
+    </>
+  )
+}
