@@ -6,16 +6,33 @@ import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { StepPrompt } from "@/components/StepPrompt"
 import { PrimaryButton } from "@/components/PrimaryButton"
+import { ReflectionDisplay } from "@/components/ReflectionDisplay"
 
 export default function ReorientationPage() {
   const router = useRouter()
   const [text, setText] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [reflection, setReflection] = useState<string | null>(null)
 
   async function handleComplete() {
+
+    const sessionId = localStorage.getItem("evoke-session-id")
+    const res = await fetch("/api/reflect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId,
+        step: 0,
+        input: text,
+      }),
+    })
+    const data = await res.json()
+    setReflection(data.reflection)
+
+    //-------------------------
+
     if (!text.trim()) return
     setIsSubmitting(true)
-    
     try {
       const sessionId = localStorage.getItem("evoke-session-id")
       await fetch("/api/complete-session", {
@@ -25,8 +42,7 @@ export default function ReorientationPage() {
       })
       setTimeout(() => {
         router.push("/complete")
-      }, 3000)
-      
+      }, 5000);
     } catch {
       setIsSubmitting(false)
     }
@@ -58,6 +74,9 @@ export default function ReorientationPage() {
                 {isSubmitting ? "Completing..." : "Complete"}
               </PrimaryButton>
             </div>
+          </div>
+          <div className="flex flex-col gap-6">
+            <ReflectionDisplay reflection={reflection} />
           </div>
         </div>
       </LayoutContainer>
