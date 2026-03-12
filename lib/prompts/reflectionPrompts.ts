@@ -2,32 +2,32 @@ export const REFLECTION_STEPS = [
   {
     step: 1,
     label: "Movement",
-    prompt: "Take a moment to arrive here. What feels most present for you right now?",
+    prompt: "You might begin by noticing what feels most present for you right now.",
   },
   {
     step: 2,
     label: "Movement",
-    prompt: "As you sit with the moment, what thoughts or feelings seem to be asking for your attention?",
+    prompt: "Perhaps you can notice where your attention naturally goes.",
   },
   {
     step: 3,
     label: "Movement",
-    prompt: "What feels most alive or active in your life at the moment?",
+    prompt: "You may begin to notice any thoughts moving through your mind.",
   },
   {
     step: 4,
     label: "Movement",
-    prompt: "When you sit quietly with that, what do you notice within yourself?",
+    prompt: "See if there is a feeling underneath those thoughts.",
   },
   {
     step: 5,
     label: "Movement",
-    prompt: "As you reflect on what you’ve shared so far, what feels most meaningful or true for you?",
+    prompt: "You might gently acknowledge whatever is here.",
   },
   {
     step: 6,
     label: "Movement",
-    prompt: "From where you are now, what feels most important to acknowledge for yourself?",
+    prompt: "You may allow whatever is here to soften slightly.",
   },
 ] as const
 

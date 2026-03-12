@@ -56,7 +56,7 @@ export default function ReflectionStepPage({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId,
-          step: stepNumber,
+          stepNumber: stepNumber,
           input,
         }),
       })

@@ -17,7 +17,7 @@ export default function ReorientationPage() {
   async function handleComplete() {
 
     const sessionId = localStorage.getItem("evoke-session-id")
-    const res = await fetch("/api/reflect", {
+    const res = await fetch("/api/reorientation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -27,7 +27,7 @@ export default function ReorientationPage() {
       }),
     })
     const data = await res.json()
-    setReflection(data.reflection)
+    setReflection(data.reorientation)
 
     //-------------------------
 

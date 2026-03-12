@@ -5,7 +5,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { input } = body;
+    const { input, stepNumber } = body;
 
     if (!input) {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const reflection = await generateReflection(input);
+    const reflection = await generateReflection(input, stepNumber);
 
     return NextResponse.json({
       reflection,
