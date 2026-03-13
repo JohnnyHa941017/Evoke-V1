@@ -49,7 +49,7 @@ export default function ArrivalPage() {
         <p className="mb-6 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem"}}>
           EVOKE
         </p>
-        <h1 className="mb-10 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
+        <h1 className="mb-8 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
           Relax your mind and begin your journey.
         </h1>
         <div className={`transition-opacity duration-2000 ${buttonFadingOut ? 'opacity-0' : 'opacity-100'}`}>

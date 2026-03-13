@@ -6,8 +6,6 @@ import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { StepPrompt } from "@/components/StepPrompt"
 import { ReflectionInput } from "@/components/ReflectionInput"
-import { ReflectionDisplay } from "@/components/ReflectionDisplay"
-import { PrimaryButton } from "@/components/PrimaryButton"
 import { REFLECTION_STEPS, TOTAL_STEPS } from "@/lib/prompts/reflectionPrompts"
 
 export default function ReflectionStepPage({
@@ -117,26 +115,17 @@ export default function ReflectionStepPage({
             prompt={currentStep.prompt}
           />
 
-          {!reflection ? (
-            <ReflectionInput
-              onSubmit={handleSubmitReflection}
-              isLoading={isLoading}
-              placeholder="Let the words come without direction..."
-              stepNumber={stepNumber}
-            />
-          ) : (
-            <div className="flex flex-col gap-8">
-              <ReflectionDisplay reflection={reflection} />
-              <div>
-                <PrimaryButton onClick={handleContinue} disabled={isSubmitting}>
-                  {stepNumber < TOTAL_STEPS ? "Continue" : "Move to closing"}
-                </PrimaryButton>
-                <PrimaryButton onClick={handleBack} disabled={stepNumber === 1}>
-                  Back
-                </PrimaryButton>
-              </div>
-            </div>
-          )}
+          <ReflectionInput
+            onSubmit={handleSubmitReflection}
+            isLoading={isLoading}
+            placeholder="Let the words come without direction..."
+            stepNumber={stepNumber}
+            reflection={reflection}
+            onContinue={handleContinue}
+            onBack={handleBack}
+            isSubmitting={isSubmitting}
+            totalSteps={TOTAL_STEPS}
+          />
         </div>
       </LayoutContainer>
     </>
