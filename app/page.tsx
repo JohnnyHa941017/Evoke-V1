@@ -25,9 +25,9 @@ export default function ArrivalPage() {
   }
 
   return (
-    <LayoutContainer>
+    <LayoutContainer className="arrival-page">
       <div className="flex flex-col items-center text-center">
-        <p className="mb-8 text-xs font-medium uppercase tracking-[0.3em] text-accent">
+        <p className="mb-8 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Times New Roman" , fontSize: "6rem"}}>
           Evoke
         </p>
         <h1 className="mb-6 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
