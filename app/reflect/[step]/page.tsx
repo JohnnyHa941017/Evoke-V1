@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, use } from "react"
+import { useState, use, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
@@ -21,7 +21,12 @@ export default function ReflectionStepPage({
 
   const [reflection, setReflection] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [pageVisible, setPageVisible] = useState(false)
+
+  useEffect(() => {
+    setPageVisible(true)
+  }, [])
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
@@ -91,7 +96,8 @@ export default function ReflectionStepPage({
   return (
     <>
       <Header />
-      <LayoutContainer>
+      <div className={`transition-opacity duration-1000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <LayoutContainer>
         <div className="flex flex-col">
           {/* Step indicator */}
           <div className="mb-12 flex items-center gap-3">
@@ -134,6 +140,7 @@ export default function ReflectionStepPage({
           
         </div>
       </LayoutContainer>
+      </div>
     </>
   )
 }

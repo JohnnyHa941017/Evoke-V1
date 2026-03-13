@@ -1,13 +1,25 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { PrimaryButton } from "@/components/PrimaryButton"
 
 export default function ArrivalPage() {
   const router = useRouter()
   const [isStarting, setIsStarting] = useState(false)
+  const [buttonFadingOut, setButtonFadingOut] = useState(false)
+  const [backgroundVisible, setBackgroundVisible] = useState(false)
+  const [contentVisible, setContentVisible] = useState(false)
+
+  useEffect(() => {
+    const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
+    const contentTimer = setTimeout(() => setContentVisible(true), 2100)
+    return () => {
+      clearTimeout(bgTimer)
+      clearTimeout(contentTimer)
+    }
+  }, [])
 
   async function handleBegin() {
     setIsStarting(true)
@@ -17,7 +29,13 @@ export default function ArrivalPage() {
       console.log(data.sessionId)
       if (data.sessionId) {
         localStorage.setItem("evoke-session-id", data.sessionId)
-        router.push("/reflect/1")
+        // Wait 2 seconds with "Arriving...", then fade out button for 2 seconds, then navigate
+        setTimeout(() => {
+          setButtonFadingOut(true)
+          setTimeout(() => {
+            router.push("/reflect/1")
+          }, 2000)
+        }, 2000)
       }
     } catch {
       setIsStarting(false)
@@ -25,22 +43,19 @@ export default function ArrivalPage() {
   }
 
   return (
-    <LayoutContainer className="arrival-page">
-      <div className="flex flex-col items-center text-center">
-        <p className="mb-8 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Times New Roman" , fontSize: "6rem"}}>
+    <LayoutContainer className={`arrival-page transition-opacity duration-2000 ${backgroundVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`flex flex-col items-center text-center transition-opacity duration-2000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
+        <p className="mb-6 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Times New Roman" , fontSize: "6rem"}}>
           Evoke
         </p>
-        <h1 className="mb-6 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
-          Take a moment to arrive.
+        <h1 className="mb-20 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
+          Relax your mind and begin your journey.
         </h1>
-        <p className="mb-14 max-w-md text-base leading-relaxed text-muted-foreground">
-          This is a contained reflective experience.
-          <br />
-          There is no urgency here.
-        </p>
-        <PrimaryButton onClick={handleBegin} disabled={isStarting}>
-          {isStarting ? "Arriving..." : "Begin"}
-        </PrimaryButton>
+        <div className={`transition-opacity duration-2000 ${buttonFadingOut ? 'opacity-0' : 'opacity-100'}`}>
+          <PrimaryButton onClick={handleBegin} disabled={isStarting}>
+            {isStarting ? "Arriving..." : "Begin Journey"}
+          </PrimaryButton>
+        </div>
       </div>
     </LayoutContainer>
   )

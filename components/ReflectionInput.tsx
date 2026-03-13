@@ -7,6 +7,7 @@ interface ReflectionInputProps {
   onSubmit: (text: string) => void
   isLoading?: boolean
   placeholder?: string
+  stepNumber: number
 }
 
 export function ReflectionInput({
