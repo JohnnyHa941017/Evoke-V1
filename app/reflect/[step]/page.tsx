@@ -100,7 +100,7 @@ export default function ReflectionStepPage({
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
         <div className={`flex flex-col transition-opacity duration-1000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
-          <div className="mb-12 flex items-center gap-3">
+          <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (
               <div
                 key={s.step}

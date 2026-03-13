@@ -5,7 +5,7 @@ interface StepPromptProps {
 
 export function StepPrompt({ label, prompt }: StepPromptProps) {
   return (
-    <div className="mb-10">
+    <div className="mb-8">
       <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {/* {label} */}
       </p>
