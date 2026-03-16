@@ -41,10 +41,10 @@ export default function ArrivalPage() {
     <LayoutContainer className={`arrival-page transition-opacity duration-2000 ${backgroundVisible ? 'opacity-100' : 'opacity-0'}`}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
       <div className={`flex flex-col items-center text-center transition-opacity duration-2000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
-        <p className="mb-6 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem"}}>
+        <p className="mb-4 text-4xl font-light tracking-wide text-accent" style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem"}}>
           EVOKE
         </p>
-        <h1 className="mb-8 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
+        <h1 className="mb-20 font-serif text-3xl leading-tight text-foreground md:text-4xl text-balance">
           Relax your mind and begin your journey.
         </h1>
         <div className={`transition-opacity duration-2000 ${buttonFadingOut ? 'opacity-0' : 'opacity-100'}`}>

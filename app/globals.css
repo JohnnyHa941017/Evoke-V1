@@ -104,3 +104,8 @@
   background: url('/completeback.png') no-repeat center center;
   background-size: cover;
 }
+
+.reorientation-page {
+  background: url('/reorientation.png') no-repeat center center;
+  background-size: cover;
+}
