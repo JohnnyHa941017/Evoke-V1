@@ -15,6 +15,7 @@ export default function ArrivalPage() {
   useEffect(() => {
     const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
     const contentTimer = setTimeout(() => setContentVisible(true), 2100)
+    sessionStorage.clear() // Clear any previous session data
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
@@ -23,20 +24,14 @@ export default function ArrivalPage() {
 
   async function handleBegin() {
     setIsStarting(true)
+    sessionStorage.setItem("current_step", "1") // Initialize current step in session storage
     try {
-      const res = await fetch("/api/start-session", { method: "POST" })
-      const data = await res.json()
-      console.log(data.sessionId)
-      if (data.sessionId) {
-        localStorage.setItem("evoke-session-id", data.sessionId)
-        // Wait 2 seconds with "Arriving...", then fade out button for 2 seconds, then navigate
-        setTimeout(() => {
+      setTimeout(() => {
           setButtonFadingOut(true)
           setTimeout(() => {
             router.push("/reflect/1")
           }, 2000)
         }, 2000)
-      }
     } catch {
       setIsStarting(false)
     }

@@ -24,6 +24,9 @@ export default function ReflectionStepPage({
 
   useEffect(() => {
     setPageVisible(true)
+
+    //Set session storage for continuity across steps.
+    sessionStorage.setItem("current_step", stepNumber.toString())
   }, [])
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
@@ -74,6 +77,7 @@ export default function ReflectionStepPage({
 
   function handleContinue() {
     setIsSubmitting(true)
+    sessionStorage.setItem(`step_${stepNumber}_reflection`, reflection || "")
     if (stepNumber < TOTAL_STEPS) {
       setTimeout(() => {
         router.push(`/reflect/${stepNumber + 1}`)

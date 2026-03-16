@@ -13,6 +13,7 @@ interface ReflectionInputProps {
   onBack?: () => void
   isSubmitting?: boolean
   totalSteps: number
+  continueButtonText?: string
 }
 
 export function ReflectionInput({
@@ -25,6 +26,7 @@ export function ReflectionInput({
   onBack,
   isSubmitting = false,
   totalSteps,
+  continueButtonText,
 }: ReflectionInputProps) {
   const router = useRouter()
   const [text, setText] = useState("")
@@ -67,35 +69,35 @@ export function ReflectionInput({
         {reflection ? (
           <>
             <button
-              onClick={onContinue}
-              disabled={isSubmitting}
-              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-            >
-              {stepNumber < totalSteps ? "Continue" : "Move to closing"}
-            </button>
-            <button
               onClick={onBack}
               disabled={stepNumber === 1}
               className="flex-1 rounded-lg border border-white bg-transparent py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               Back
             </button>
+            <button
+              onClick={onContinue}
+              disabled={isSubmitting}
+              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+            >
+              {continueButtonText || (stepNumber < totalSteps ? "Continue" : "Move to closing")}
+            </button>
           </>
         ) : (
           <>
-            <button
-              onClick={handleSubmit}
-              disabled={!text.trim() || isLoading}
-              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-            >
-              {isLoading ? "Reflecting..." : "Reflect"}
-            </button>
             <button
               onClick={handleBack}
               disabled={stepNumber === 1}
               className="flex-1 rounded-lg border border-white bg-transparent py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               Back
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!text.trim() || isLoading}
+              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+            >
+              {isLoading ? "Reflecting..." : "Reflect"}
             </button>
           </>
         )}

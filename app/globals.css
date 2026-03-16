@@ -99,3 +99,8 @@
   background: url('/first_back.png') no-repeat center center;
   background-size: cover;
 }
+
+.complete-page {
+  background: url('/completeback.png') no-repeat center center;
+  background-size: cover;
+}

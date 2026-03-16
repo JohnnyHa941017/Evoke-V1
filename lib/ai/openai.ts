@@ -14,6 +14,10 @@ export async function generateReflection(userText: string, stepNumber: any) {
       {
         role: "system",
         content: `
+          You are a calm reflective listener.
+
+          Respond with a short reflection of what the user noticed.
+
           The reflection must be satisfied the following properties.
           And this is Movement ${stepNumber}
 
@@ -260,6 +264,10 @@ export async function generateReorientation(userText: string) {
       {
         role: "system",
         content: `
+          You are a calm reflective listener.
+
+          Respond with a short reflection of what the user noticed.
+          
           The reorientation must be satisfied the followiong requirements.
 
           Properties of the Reorientation Mirror
