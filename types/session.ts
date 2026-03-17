@@ -1,21 +1,3 @@
-/*
-export interface Session {
-  id: string
-  createdAt: string
-  completed: boolean
-  reflections: Reflection[]
-}
-
-export interface Reflection {
-  id: string
-  sessionId: string
-  step: number
-  input: string
-  response: string
-  createdAt: string
-}
-*/
-
 export type Reflection = {
   step: number
   input: string
@@ -23,11 +5,10 @@ export type Reflection = {
 }
 
 export type Session = {
-  sessionId: string
-  currentStep: number
+  id: string
+  createdAt: string
   completed: boolean
   reflections: Reflection[]
-  createdAt: number
 }
 
 

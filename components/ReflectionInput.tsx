@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 interface ReflectionInputProps {
@@ -14,6 +13,9 @@ interface ReflectionInputProps {
   isSubmitting?: boolean
   totalSteps: number
   continueButtonText?: string
+  userInput?: string
+  onInputChange?: (text: string) => void
+  isVisible?: boolean
 }
 
 export function ReflectionInput({
@@ -27,25 +29,30 @@ export function ReflectionInput({
   isSubmitting = false,
   totalSteps,
   continueButtonText,
+  userInput = "",
+  onInputChange,
+  isVisible = true,
 }: ReflectionInputProps) {
   const router = useRouter()
-  const [text, setText] = useState("")
 
   function handleSubmit() {
-    if (!text.trim() || isLoading) return
-    onSubmit(text.trim())
+    if (!userInput.trim() || isLoading) return
+    onSubmit(userInput.trim())
+  }
+
+  function handleInputChange(value: string) {
+    onInputChange?.(value)
   }
 
   function handleBack() {
     if (stepNumber > 1) {
       router.push(`/reflect/${stepNumber - 1}`)
-    } else {
-    //  router.push("/")
     }
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className={`transition-opacity duration-2000 mt-2 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="flex flex-col gap-6">
       {reflection ? (
         <textarea
           value={reflection}
@@ -56,8 +63,8 @@ export function ReflectionInput({
         />
       ) : (
         <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={userInput}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           disabled={isLoading}
           rows={8}
@@ -94,13 +101,14 @@ export function ReflectionInput({
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!text.trim() || isLoading}
+              disabled={!userInput.trim() || isLoading}
               className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               {isLoading ? "Reflecting..." : "Reflect"}
             </button>
           </>
         )}
+      </div>
       </div>
     </div>
   )

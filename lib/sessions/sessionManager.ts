@@ -1,7 +1,6 @@
 import type { Session, Reflection } from "@/types/session"
-import { v4 as uuidv4 } from "uuid"
 
-// In-memory store for V1 — ready to swap for Prisma/PostgreSQL
+// In-memory store for sessions and reflections
 const sessions = new Map<string, Session>()
 
 function generateId(): string {

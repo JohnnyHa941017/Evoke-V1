@@ -7,12 +7,13 @@ import { LayoutContainer } from "@/components/LayoutContainer"
 import { StepPrompt } from "@/components/StepPrompt"
 import { ReflectionInput } from "@/components/ReflectionInput"
 import { REFLECTION_STEPS, TOTAL_STEPS } from "@/lib/prompts/reflectionPrompts"
+import { restoreSessionState, persistSessionState } from "@/lib/persistence"
 
 export default function ReorientationPage() {
   const router = useRouter()
 
   const [reflection, setReflection] = useState<string | null>(null)
-  const [inputText, setInputText] = useState("")
+  const [userInput, setUserInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pageVisible, setPageVisible] = useState(false)
@@ -22,7 +23,7 @@ export default function ReorientationPage() {
   }, [])
 
   async function handleSubmitReflection(input: string) {
-    setInputText(input)
+    setUserInput(input)
     setIsLoading(true)
     try {
       const sessionId = localStorage.getItem("evoke-session-id")
@@ -46,13 +47,20 @@ export default function ReorientationPage() {
 
   function handleContinue() {
     setIsSubmitting(true)
+    const { sessionId, reflections } = restoreSessionState()
+    
+    // Save reorientation to session
+    if (sessionId) {
+      persistSessionState(sessionId, TOTAL_STEPS + 1, reflections, true)
+    }
+    
     setTimeout(async () => {
       try {
         const sessionId = localStorage.getItem("evoke-session-id")
         await fetch("/api/complete-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, reorientation: inputText }),
+          body: JSON.stringify({ sessionId, reorientation: userInput }),
         })
         router.push("/complete")
       } catch {
@@ -100,6 +108,8 @@ export default function ReorientationPage() {
             isSubmitting={isSubmitting}
             totalSteps={TOTAL_STEPS + 1}
             continueButtonText="Complete"
+            userInput={userInput}
+            onInputChange={setUserInput}
           />
         </div>
       </LayoutContainer>

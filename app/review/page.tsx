@@ -5,6 +5,7 @@ import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { ReflectionDisplay } from "@/components/ReflectionDisplay"
 import { SecondaryLink } from "@/components/SecondaryLink"
+import { getSavedReflections } from "@/lib/persistence"
 
 interface ReviewReflection {
   step: number
@@ -20,15 +21,27 @@ export default function ReviewPage() {
     async function fetchReflections() {
       const sessionId = localStorage.getItem("evoke-session-id")
       if (!sessionId) {
+        // Try to load from localStorage cache
+        const saved = getSavedReflections()
+        setReflections(saved)
         setIsLoading(false)
         return
       }
       try {
         const res = await fetch(`/api/reflections?sessionId=${sessionId}`)
         const data = await res.json()
-        setReflections(data.reflections || [])
+        const fetchedReflections = data.reflections || []
+        setReflections(fetchedReflections)
+        
+        // Fallback to localStorage if API fails
+        if (fetchedReflections.length === 0) {
+          const saved = getSavedReflections()
+          setReflections(saved)
+        }
       } catch {
-        // silently handle
+        // Fallback to localStorage on error
+        const saved = getSavedReflections()
+        setReflections(saved)
       } finally {
         setIsLoading(false)
       }
