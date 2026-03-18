@@ -81,10 +81,10 @@ export default function ArrivalPage() {
   }
 
   return (
-    <LayoutContainer className={`arrival-page transition-opacity duration-2000 ${backgroundVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <LayoutContainer className={`arrival-page`} style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
       <div className={`flex flex-col items-center text-center transition-opacity duration-1000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
-        <p className={`mb-20 text-4xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem", filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }}>
+        <p className={`mb-20 text-4xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem", filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }} suppressHydrationWarning>
           EVOKE
         </p>
         
