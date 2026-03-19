@@ -33,7 +33,7 @@ export function Header() {
           className="w-60 h-40"
         />
       </Link>
-      <div className="h-px w-12 bg-border" aria-hidden="true" />
+      {/* <div className="h-px w-12 bg-border" aria-hidden="true" /> */}
     </header>
   )
 }

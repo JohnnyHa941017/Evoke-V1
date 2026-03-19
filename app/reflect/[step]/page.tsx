@@ -30,6 +30,7 @@ export default function ReflectionStepPage({
   const [pageVisible, setPageVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
   const [isReloaded, setIsReloaded] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
@@ -114,6 +115,8 @@ export default function ReflectionStepPage({
 
   function handleContinue() {
     setIsSubmitting(true)
+    setIsTransitioning(true)
+    
     const { sessionId, reflections } = restoreSessionState()
     
     if (sessionId && reflection) {
@@ -125,13 +128,14 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
     
-    if (stepNumber < TOTAL_STEPS) {
-      setTimeout(() => {
+    // Wait for fade-out (2000ms) before navigating
+    setTimeout(() => {
+      if (stepNumber < TOTAL_STEPS) {
         router.push(`/reflect/${stepNumber + 1}`)
-      }, 3000)
-    } else {
-      router.push("/reorientation")
-    }
+      } else {
+        router.push("/reorientation")
+      }
+    }, 2000)
   }
 
   function handleBack() {
@@ -153,7 +157,7 @@ export default function ReflectionStepPage({
       <Header />
       <LayoutContainer className="reflection-page">
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col transition-opacity duration-1000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !isTransitioning ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
           {/* <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (
