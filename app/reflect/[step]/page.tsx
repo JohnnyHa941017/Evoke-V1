@@ -29,6 +29,7 @@ export default function ReflectionStepPage({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pageVisible, setPageVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
+  const [isReloaded, setIsReloaded] = useState(false)
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
@@ -48,33 +49,18 @@ export default function ReflectionStepPage({
     if (existingReflection) {
       setUserInput(existingReflection.input)
       setReflection(existingReflection.response)
+      // If reflection exists, show input immediately and mark as reloaded
+      setInputVisible(true)
+      setIsReloaded(true)
     }
 
     // Update current step in localStorage
     updateCurrentStep(stepNumber)
   }, [stepNumber, router])
 
-  useEffect(() => {
-    // Calculate when to show the input field based on the current step's prompt
-    if (currentStep) {
-      const lines = currentStep.prompt
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0)
-      
-      // Show input after all prompt lines have finished fading in
-      // Last line starts appearing at (lines.length - 1) * 800ms
-      // Last line finishes fading in at (lines.length - 1) * 800 + 2000ms
-      // Add extra 200ms for safety
-      const delayMs = (lines.length - 1) * 800 + 2000 + 200
-      
-      const timer = setTimeout(() => {
-        setInputVisible(true)
-      }, delayMs)
-
-      return () => clearTimeout(timer)
-    }
-  }, [currentStep])
+  function handlePromptComplete() {
+    setInputVisible(true)
+  }
 
   if (!currentStep) {
     router.push("/")
@@ -169,7 +155,7 @@ export default function ReflectionStepPage({
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
         <div className={`flex flex-col transition-opacity duration-1000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
-          <div className="mb-8 flex items-center gap-3">
+          {/* <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (
               <div
                 key={s.step}
@@ -179,11 +165,13 @@ export default function ReflectionStepPage({
                 aria-hidden="true"
               />
             ))}
-          </div>
+          </div> */}
 
           <StepPrompt
             label={`${currentStep.label} — Step ${stepNumber} of ${TOTAL_STEPS}`}
             prompt={currentStep.prompt}
+            onPromptComplete={handlePromptComplete}
+            isReloaded={isReloaded}
           />
 
           <ReflectionInput

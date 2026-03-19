@@ -1,10 +1,17 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { PrimaryButton } from "@/components/PrimaryButton"
 import { restoreSessionState, persistSessionState } from "@/lib/persistence"
+
+const sentences = [
+  "This space is different.",
+  "You are not here to perform or complete something.",
+  "You are here to arrive exactly as you are.",
+  "This space will be here.",
+]
 
 export default function ArrivalPage() {
   const router = useRouter()
@@ -13,7 +20,9 @@ export default function ArrivalPage() {
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
   const [titleVisible, setTitleVisible] = useState(false)
-  const [visibleLines, setVisibleLines] = useState<number[]>([])
+  const [visibleWordCounts, setVisibleWordCounts] = useState<number[]>(() =>
+    sentences.map(() => 0)
+  )
   const [buttonVisible, setButtonVisible] = useState(false)
   const [buttonAnimating, setButtonAnimating] = useState(false)
   useEffect(() => {
@@ -30,31 +39,46 @@ export default function ArrivalPage() {
       setContentVisible(true)
       setTitleVisible(true)
     }, 2100)
-    
-    // Lines appear 1 second after title fades (3 seconds after content visible)
-    // and then appear one by one with 800ms between each
-    const lineTimers = [
-      setTimeout(() => setVisibleLines((prev) => [...prev, 0]), 4100),
-      setTimeout(() => setVisibleLines((prev) => [...prev, 1]), 5100),
-      setTimeout(() => setVisibleLines((prev) => [...prev, 2]), 6100),
-      setTimeout(() => setVisibleLines((prev) => [...prev, 3]), 7100),
-    ]
-    
-    // Button appears 2 seconds after the last line
+
+    // Words appear 1 second after title fades (3 seconds after content visible).
+    // Each word fades in over 0.8s, with 0.3s between words.
+    // After an entire sentence is displayed, the next sentence begins after a random delay between 2-3 seconds.
+    const timers: ReturnType<typeof setTimeout>[] = []
+    let nextTimerDelay = 4100
+    let lastWordRevealTime = nextTimerDelay
+
+    sentences.forEach((sentence, sentenceIndex) => {
+      const words = sentence.split(" ")
+      words.forEach((_, wordIndex) => {
+        timers.push(
+          setTimeout(() => {
+            setVisibleWordCounts((prev) => {
+              const next = [...prev]
+              if (next[sentenceIndex] >= wordIndex + 1) return prev
+              next[sentenceIndex] = wordIndex + 1
+              return next
+            })
+          }, nextTimerDelay)
+        )
+        lastWordRevealTime = nextTimerDelay
+        nextTimerDelay += 300
+      })
+      nextTimerDelay += 2000 + Math.random() * 1000
+    })
+
     const buttonTimer = setTimeout(() => {
       setButtonVisible(true)
       setButtonAnimating(true)
-    }, 9100)
-    
-    // Stop animation after 2 seconds (matches the fade-in duration)
-    const buttonAnimationEndTimer = setTimeout(() => setButtonAnimating(false), 11100)
+    }, lastWordRevealTime + 2000)
+
+    const buttonAnimationEndTimer = setTimeout(() => setButtonAnimating(false), lastWordRevealTime + 4000)
 
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
       clearTimeout(buttonTimer)
       clearTimeout(buttonAnimationEndTimer)
-      lineTimers.forEach(timer => clearTimeout(timer))
+      timers.forEach((timer) => clearTimeout(timer))
     }
   }, [router])
 
@@ -88,22 +112,30 @@ export default function ArrivalPage() {
           EVOKE
         </p>
         
-        <div className={`mb-20 space-y-1 min-h-[160px] text-2xl leading-relaxed text-foreground md:text-3xl text-balance font-light transition-opacity duration-2000 ${visibleLines.length > 0 ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Gabriola" }}>
-          {[
-            "This space is different.",
-            "You are not here to perform or complete something.",
-            "You are here to arrive exactly as you are.",
-            "This space will be here.",
-          ].map((line, idx) => (
-            <p
-              key={idx}
-              className={`transition-opacity duration-2000 ${
-                visibleLines.includes(idx) ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              {line}
-            </p>
-          ))}
+        <div className={`mb-20 space-y-1 min-h-[160px] text-3xl leading-relaxed text-foreground md:text-4xl text-balance font-light transition-opacity duration-2000 ${visibleWordCounts.some((count) => count > 0) ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Gabriola" }}>
+          {sentences.map((sentence, sentenceIndex) => {
+            const words = sentence.split(" ")
+            const visibleCount = visibleWordCounts[sentenceIndex] ?? 0
+
+            return (
+              <p key={sentenceIndex} className="transition-opacity duration-800">
+                {words.map((word, wordIndex) => (
+                  <Fragment key={wordIndex}>
+                    <span
+                      className={`inline-block transition-opacity duration-800 ${
+                        wordIndex < visibleCount ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      {word}
+                    </span>
+                    {wordIndex < words.length - 1 ? (
+                      <span className="inline-block opacity-100">&nbsp;</span>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </p>
+            )
+          })}
         </div>
 
         <div className={`transition-opacity duration-2000 ${buttonVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>

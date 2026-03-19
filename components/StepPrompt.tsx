@@ -5,9 +5,11 @@ import { useState, useEffect } from "react"
 interface StepPromptProps {
   label: string
   prompt: string
+  onPromptComplete?: () => void
+  isReloaded?: boolean
 }
 
-export function StepPrompt({ label, prompt }: StepPromptProps) {
+export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: StepPromptProps) {
   const [visibleLines, setVisibleLines] = useState<number[]>([])
   
   const lines = prompt
@@ -16,17 +18,63 @@ export function StepPrompt({ label, prompt }: StepPromptProps) {
     .filter(line => line.length > 0)
   
   useEffect(() => {
+    // If this is a reload, show all lines immediately
+    if (isReloaded) {
+      const allLineIndices = lines.map((_, idx) => idx)
+      setVisibleLines(allLineIndices)
+      if (onPromptComplete) {
+        onPromptComplete()
+      }
+      return
+    }
+
     // Display each line with fade-in animation
-    const timers = lines.map((_, idx) => {
-      return setTimeout(() => {
-        setVisibleLines((prev) => [...prev, idx])
-      }, idx * 800)
+    // Each line appears after previous line finishes fading (2000ms) + unique random 1-2s delay
+    // Ensure all intervals on this page render are different from each other
+    const timers: ReturnType<typeof setTimeout>[] = []
+    let cumulativeDelay = 0
+
+    // Generate unique random intervals for all statements (except first)
+    const intervals: number[] = []
+    for (let i = 1; i < lines.length; i++) {
+      let randomInterval: number
+      // Ensure this interval is not equal to any previous interval
+      do {
+        randomInterval = 1000 + Math.random() * 1000
+      } while (intervals.some(interval => Math.abs(interval - randomInterval) < 1)) // tolerance of 1ms
+      intervals.push(randomInterval)
+    }
+
+    let maxDelay = 0
+
+    lines.forEach((_, idx) => {
+      if (idx > 0) {
+        // Add fade duration + unique random interval between 1-2 seconds
+        cumulativeDelay += 2000 + intervals[idx - 1]
+      }
+      
+      maxDelay = cumulativeDelay
+
+      timers.push(
+        setTimeout(() => {
+          setVisibleLines((prev) => [...prev, idx])
+        }, cumulativeDelay)
+      )
     })
+
+    // Fire callback after all lines are fully displayed (last line finishes fading in)
+    if (onPromptComplete) {
+      timers.push(
+        setTimeout(() => {
+          onPromptComplete()
+        }, maxDelay + 2000)
+      )
+    }
 
     return () => {
       timers.forEach(timer => clearTimeout(timer))
     }
-  }, [lines.length])
+  }, [lines.length, onPromptComplete, isReloaded])
 
   return (
     <div className="mb-8 flex flex-col justify-start">
