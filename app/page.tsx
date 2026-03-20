@@ -11,11 +11,11 @@ import localFont from 'next/font/local'
 // const goudyOldStyle = localFont({ src: './fonts/GoudyOldStyle.woff2' })
 
 const gabriola = localFont({
-  src: '/fonts/Gabriola.woff2'
+  src: '../fonts/Gabriola.woff2'
 })
 
 const goudyOldStyle = localFont({
-  src: '/fonts/GoudyOldStyle.woff2'
+  src: '../fonts/GoudyOldStyle.woff2'
 })
 
 const sentences = [
