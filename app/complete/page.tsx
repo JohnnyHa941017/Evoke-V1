@@ -72,7 +72,7 @@ export default function CompletePage() {
             ].map((line, idx) => (
               <p
                 key={idx}
-                className={`leading-relaxed text-muted-foreground ${idx === 0 ? "mb-2" : ""}`}
+                className={`font-serif leading-relaxed text-black ${idx === 0 ? "mb-2" : ""}`}
                 style={{ fontSize: "20px" }}
               >
                 {line}

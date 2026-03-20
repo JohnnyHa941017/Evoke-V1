@@ -25,6 +25,7 @@ export default function ArrivalPage() {
   )
   const [buttonVisible, setButtonVisible] = useState(false)
   const [buttonAnimating, setButtonAnimating] = useState(false)
+  const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
   useEffect(() => {
     // Check if there's an existing uncompleted session
     const { sessionId, currentStep, completed } = restoreSessionState()
@@ -92,12 +93,20 @@ export default function ArrivalPage() {
       // Save session state to localStorage
       persistSessionState(sessionId, 1, [], false)
       
+      // First, fade out content (2 seconds)
       setTimeout(() => {
         setButtonFadingOut(true)
-        setTimeout(() => {
-          router.push("/reflect/1")
-        }, 2000)
       }, 2000)
+      
+      // Then, fade out background (after content is done, for 2 more seconds)
+      setTimeout(() => {
+        setBackgroundFadingOut(true)
+      }, 4000)
+      
+      // Finally, navigate (after background is done fading)
+      setTimeout(() => {
+        router.push("/reflect/1")
+      }, 6000)
     } catch (error) {
       console.error("Failed to begin session:", error)
       setIsStarting(false)
@@ -105,9 +114,9 @@ export default function ArrivalPage() {
   }
 
   return (
-    <LayoutContainer className={`arrival-page`} style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
+    <LayoutContainer className={`arrival-page`} style={{ filter: backgroundVisible && !backgroundFadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-      <div className={`flex flex-col items-center text-center transition-opacity duration-1000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`flex flex-col items-center text-center transition-opacity duration-2000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
         <p className={`mb-20 text-4xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style" , fontSize: "6rem", filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }} suppressHydrationWarning>
           EVOKE
         </p>

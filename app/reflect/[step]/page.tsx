@@ -30,13 +30,11 @@ export default function ReflectionStepPage({
   const [pageVisible, setPageVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
   const [isReloaded, setIsReloaded] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [backgroundVisible, setBackgroundVisible] = useState(stepNumber > 1)
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
   useEffect(() => {
-    setPageVisible(true)
-
     // Restore session state and user input for this step
     const { sessionId, reflections, completed } = restoreSessionState()
     
@@ -47,12 +45,36 @@ export default function ReflectionStepPage({
 
     // Check if user has already completed this step
     const existingReflection = reflections.find((r) => r.step === stepNumber)
+    const isReloadedStep = !!existingReflection
+    
     if (existingReflection) {
       setUserInput(existingReflection.input)
       setReflection(existingReflection.response)
-      // If reflection exists, show input immediately and mark as reloaded
+      // If reflection exists (reloaded), show everything immediately
+      setBackgroundVisible(true)
+      setPageVisible(true)
       setInputVisible(true)
       setIsReloaded(true)
+    } else {
+      // Navigation within reflection pages
+      // Check if this is first step coming from arrival page or step-to-step navigation
+      // If step > 1, we're navigating internally, so keep background visible
+      // If step = 1 and not reloaded, fade in background (coming from arrival page)
+      
+      if (stepNumber === 1) {
+        // First step, fade in background (coming from arrival page)
+        const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
+        const contentTimer = setTimeout(() => setPageVisible(true), 2100)
+        
+        return () => {
+          clearTimeout(bgTimer)
+          clearTimeout(contentTimer)
+        }
+      } else {
+        // Step 2+: internal navigation, keep background visible immediately
+        setBackgroundVisible(true)
+        setPageVisible(true)
+      }
     }
 
     // Update current step in localStorage
@@ -115,7 +137,6 @@ export default function ReflectionStepPage({
 
   function handleContinue() {
     setIsSubmitting(true)
-    setIsTransitioning(true)
     
     const { sessionId, reflections } = restoreSessionState()
     
@@ -128,14 +149,12 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
     
-    // Wait for fade-out (2000ms) before navigating
-    setTimeout(() => {
-      if (stepNumber < TOTAL_STEPS) {
-        router.push(`/reflect/${stepNumber + 1}`)
-      } else {
-        router.push("/reorientation")
-      }
-    }, 2000)
+    // Navigate immediately without fade-out
+    if (stepNumber < TOTAL_STEPS) {
+      router.push(`/reflect/${stepNumber + 1}`)
+    } else {
+      router.push("/reorientation")
+    }
   }
 
   function handleBack() {
@@ -155,9 +174,9 @@ export default function ReflectionStepPage({
   return (
     <>
       <Header />
-      <LayoutContainer className="reflection-page">
+        <LayoutContainer className="reflection-page" style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: stepNumber === 1 ? 'filter 2000ms ease-out, opacity 2000ms ease-out' : 'none' }}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !isTransitioning ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex flex-col ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
           {/* <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (
