@@ -143,3 +143,8 @@
     background-attachment: scroll;
   }
 }
+
+@font-face {
+  font-family: 'Gabriola';
+  src: url('/fonts/Gabriola.woff2') format('woff2');
+}

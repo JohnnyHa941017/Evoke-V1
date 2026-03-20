@@ -2,6 +2,18 @@ import type { Metadata, Viewport } from "next"
 import { DM_Sans, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import localFont from "next/font/local"
+
+const gabriola = localFont({
+  src: './fonts/Gabriola.woff2',
+  display: 'swap'
+})
+
+const goudyOldStyle = localFont({
+  src: './fonts/GoudyOldStyle.woff2',
+  display: 'swap'
+})
+
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
