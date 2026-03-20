@@ -17,7 +17,7 @@ export function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-5 md:px-10">
+    <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-2 py-2 md:px-10">
       <Link
         href="/"
         onClick={handleEvokeClick}
@@ -27,10 +27,10 @@ export function Header() {
         <Image
           src="/logo.png"
           alt="Evoke Logo"
-          width={60}
+          width={40}
           height={40}
           priority
-          className="w-60 h-40"
+          className="w-20 h-20 object-contain"
         />
       </Link>
       {/* <div className="h-px w-12 bg-border" aria-hidden="true" /> */}
