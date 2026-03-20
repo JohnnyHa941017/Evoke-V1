@@ -153,3 +153,8 @@
   font-family: 'Goudy Old Style';
   src: url('/fonts/GoudyOldStyle.woff2') format('woff2');
 }
+
+@font-face {
+  font-family: 'ITC Bradley Hand';
+  src: url('/font/ITCBradleyHandW02Bold.woff2') format('woff2');
+}
