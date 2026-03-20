@@ -7,9 +7,16 @@ import { PrimaryButton } from "@/components/PrimaryButton"
 import { restoreSessionState, persistSessionState } from "@/lib/persistence"
 import localFont from 'next/font/local'
 
-const gabriola = localFont({ src: './fonts/Gabriola.woff2' })
-const goudyOldStyle = localFont({ src: './fonts/GoudyOldStyle.woff2' })
+// const gabriola = localFont({ src: './fonts/Gabriola.woff2' })
+// const goudyOldStyle = localFont({ src: './fonts/GoudyOldStyle.woff2' })
 
+const gabriola = localFont({
+  src: '/fonts/Gabriola.woff2'
+})
+
+const goudyOldStyle = localFont({
+  src: '/fonts/GoudyOldStyle.woff2'
+})
 
 const sentences = [
   "This space is different.",
