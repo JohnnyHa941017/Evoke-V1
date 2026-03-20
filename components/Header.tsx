@@ -24,14 +24,14 @@ export function Header() {
         className="flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors cursor-pointer"
         aria-label="Return to home"
       >
-        {/* <Image
+        <Image
           src="/logo.png"
           alt="Evoke Logo"
           width={60}
           height={40}
           priority
           className="w-60 h-40"
-        /> */}
+        />
       </Link>
       {/* <div className="h-px w-12 bg-border" aria-hidden="true" /> */}
     </header>

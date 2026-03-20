@@ -61,11 +61,11 @@ export default function CompletePage() {
             EVOKE
           </p>
           
-          <h1 className={`mb-8 sm:mb-10 md:mb-12 lg:mb-16 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-relaxed text-foreground`}>
+          <h1 className={`mb-8 sm:mb-8 md:mb-10 lg:mb-10 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl leading-relaxed text-foreground`}>
             Your journey is now complete
           </h1>
           
-          <div className={`mb-12 sm:mb-14 md:mb-16 lg:mb-20 space-y-2 sm:space-y-3 md:space-y-4`}>
+          <div className={`mb-12 sm:mb-8 md:mb-10 lg:mb-12 space-y-2 sm:space-y-3 md:space-y-4`}>
             {[
               "You may notice this moment again in the days ahead.",
               "This space will be here whenever you feel called to return.",
