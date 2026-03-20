@@ -146,5 +146,10 @@
 
 @font-face {
   font-family: 'Gabriola';
-  src: url('/fonts/Gabriola.woff2') format('woff2');
+  src: url('../fonts/Gabriola.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Goudy Old Style';
+  src: url('../fonts/GoudyOldStyle.woff2') format('woff2');
 }
