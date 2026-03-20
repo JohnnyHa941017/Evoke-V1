@@ -122,11 +122,11 @@ export default function ArrivalPage() {
     <LayoutContainer className={`arrival-page`} style={{ filter: backgroundVisible && !backgroundFadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
       <div className="absolute bottom-0 left-0 w-full h-[40%] sm:h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
       <div className={`flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center transition-opacity duration-2000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
-        <p className={`mb-6 sm:mb-4 md:mb-8 lg:mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style", filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }} suppressHydrationWarning>
+        <p className={`mb-6 sm:mb-4 md:mb-8 lg:mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: goudyOldStyle.style.fontFamily, filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }} suppressHydrationWarning>
           EVOKE
         </p>
         
-        <div className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-relaxed sm:leading-loose md:leading-relaxed text-foreground text-balance font-light transition-opacity duration-2000 ${visibleWordCounts.some((count) => count > 0) ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Gabriola", maxWidth: '100%', wordWrap: 'break-word' }}>
+        <div className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl leading-relaxed sm:leading-loose md:leading-relaxed text-foreground text-balance font-light transition-opacity duration-2000 ${visibleWordCounts.some((count) => count > 0) ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: gabriola.style.fontFamily, maxWidth: '100%', wordWrap: 'break-word' }}>
           {sentences.map((sentence, sentenceIndex) => {
             const words = sentence.split(" ")
             const visibleCount = visibleWordCounts[sentenceIndex] ?? 0
