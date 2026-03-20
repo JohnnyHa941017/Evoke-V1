@@ -48,9 +48,9 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-dm-sans), 'DM Sans', sans-serif;
-  --font-serif: var(--font-playfair), 'Playfair Display', serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: var(--font-dm-sans), ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica', 'Arial', sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, 'Georgia', 'Times New Roman', 'Times', serif;
+  --font-mono: ui-monospace, 'Monaco', 'Courier New', 'Courier', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -87,25 +87,58 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
 .arrival-page {
   background: url('/first_back.png') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+  width: 100%;
+}
+
+@media (max-height: 600px) {
+  .arrival-page {
+    background-attachment: scroll;
+  }
 }
 
 .reflection-page {
   background: url('/reflection.png') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .reflection-page {
+    background-attachment: scroll;
+  }
 }
 
 .complete-page {
   background: url('/completeback.png') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .complete-page {
+    background-attachment: scroll;
+  }
 }
 
 .reorientation-page {
   background: url('/reorientation.png') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .reorientation-page {
+    background-attachment: scroll;
+  }
 }

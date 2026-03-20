@@ -54,33 +54,32 @@ export default function CompletePage() {
     <>
       <Header />
       <LayoutContainer className={`complete-page transition-opacity duration-2000 ${backgroundVisible ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col items-center text-center`} style={{ filter: contentVisible ? 'blur(0px)' : 'blur(20px)', opacity: contentVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }} suppressHydrationWarning>
+        <div className="absolute bottom-0 left-0 w-full h-[40%] sm:h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
+        <div className={`flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center`} style={{ filter: contentVisible ? 'blur(0px)' : 'blur(20px)', opacity: contentVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }} suppressHydrationWarning>
           {/* <div className="mb-8 h-px w-16 bg-accent" aria-hidden="true" /> */}
-          <p className={`mb-10 text-4xl font-light tracking-wide text-accent`} style={{ fontFamily: "Goudy Old Style", fontSize: "4rem" }}>
+          <p className={`mb-8 sm:mb-10 md:mb-12 lg:mb-16 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent`} style={{ fontFamily: "Goudy Old Style" }}>
             EVOKE
           </p>
           
-          <h1 className={`mb-10 font-serif text-3xl text-foreground md:text-4xl`}>
+          <h1 className={`mb-8 sm:mb-10 md:mb-12 lg:mb-16 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-relaxed text-foreground`}>
             Your journey is now complete
           </h1>
           
-          <div className={`mb-14`}>
+          <div className={`mb-12 sm:mb-14 md:mb-16 lg:mb-20 space-y-2 sm:space-y-3 md:space-y-4`}>
             {[
               "You may notice this moment again in the days ahead.",
               "This space will be here whenever you feel called to return.",
             ].map((line, idx) => (
               <p
                 key={idx}
-                className={`font-serif leading-relaxed text-black ${idx === 0 ? "mb-2" : ""}`}
-                style={{ fontSize: "20px" }}
+                className={`font-serif leading-relaxed text-foreground text-sm sm:text-base md:text-lg lg:text-xl`}
               >
                 {line}
               </p>
             ))}
           </div>
           
-          <div className={`transition-opacity duration-2000 ${buttonVisible ? 'opacity-100' : 'opacity-0'}`} style={{ marginTop: '20px' }}>
+          <div className={`transition-opacity duration-2000 mt-8 sm:mt-10 md:mt-12 lg:mt-16 ${buttonVisible ? 'opacity-100' : 'opacity-0'}`}>
             <style>{`
               @keyframes buttonBrighten {
                 0% { filter: brightness(1); }

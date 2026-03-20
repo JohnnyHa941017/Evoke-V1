@@ -31,6 +31,7 @@ export default function ReflectionStepPage({
   const [inputVisible, setInputVisible] = useState(false)
   const [isReloaded, setIsReloaded] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(stepNumber > 1)
+  const [pageFadingOut, setPageFadingOut] = useState(false)
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
@@ -56,24 +57,13 @@ export default function ReflectionStepPage({
       setInputVisible(true)
       setIsReloaded(true)
     } else {
-      // Navigation within reflection pages
-      // Check if this is first step coming from arrival page or step-to-step navigation
-      // If step > 1, we're navigating internally, so keep background visible
-      // If step = 1 and not reloaded, fade in background (coming from arrival page)
+      // Navigation within reflection pages - apply 2s fade-in to all steps
+      const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
+      const contentTimer = setTimeout(() => setPageVisible(true), 2000)
       
-      if (stepNumber === 1) {
-        // First step, fade in background (coming from arrival page)
-        const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
-        const contentTimer = setTimeout(() => setPageVisible(true), 2100)
-        
-        return () => {
-          clearTimeout(bgTimer)
-          clearTimeout(contentTimer)
-        }
-      } else {
-        // Step 2+: internal navigation, keep background visible immediately
-        setBackgroundVisible(true)
-        setPageVisible(true)
+      return () => {
+        clearTimeout(bgTimer)
+        clearTimeout(contentTimer)
       }
     }
 
@@ -149,11 +139,16 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
     
-    // Navigate immediately without fade-out
-    if (stepNumber < TOTAL_STEPS) {
+    // Check if transitioning to reorientation page (last step)
+    if (stepNumber === TOTAL_STEPS) {
+      // Fade out current page before navigating to reorientation
+      setPageFadingOut(true)
+      setTimeout(() => {
+        router.push("/reorientation")
+      }, 2000)
+    } else if (stepNumber < TOTAL_STEPS) {
+      // Navigate to next reflect page immediately
       router.push(`/reflect/${stepNumber + 1}`)
-    } else {
-      router.push("/reorientation")
     }
   }
 
@@ -176,7 +171,7 @@ export default function ReflectionStepPage({
       <Header />
         <LayoutContainer className="reflection-page" style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: stepNumber === 1 ? 'filter 2000ms ease-out, opacity 2000ms ease-out' : 'none' }}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !pageFadingOut ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
           {/* <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (

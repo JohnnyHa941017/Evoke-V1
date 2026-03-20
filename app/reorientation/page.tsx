@@ -17,9 +17,22 @@ export default function ReorientationPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pageVisible, setPageVisible] = useState(false)
+  const [backgroundVisible, setBackgroundVisible] = useState(false)
+  const [inputVisible, setInputVisible] = useState(false)
 
   useEffect(() => {
-    setPageVisible(true)
+    // Fade in background at 0ms
+    const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
+    // Fade in content at 2000ms (after reflect page finishes fading out)
+    const contentTimer = setTimeout(() => setPageVisible(true), 2000)
+    // Fade in first element at 4000ms (2s delay + 2s for content fade)
+    const inputTimer = setTimeout(() => setInputVisible(true), 4000)
+    
+    return () => {
+      clearTimeout(bgTimer)
+      clearTimeout(contentTimer)
+      clearTimeout(inputTimer)
+    }
   }, [])
 
   async function handleSubmitReflection(input: string) {
@@ -69,6 +82,10 @@ export default function ReorientationPage() {
     }, 3000)
   }
 
+  function handlePromptComplete() {
+    setInputVisible(true)
+  }
+
   function handleBack() {
     router.push(`/reflect/${TOTAL_STEPS}`)
   }
@@ -76,11 +93,11 @@ export default function ReorientationPage() {
   return (
     <>
       <Header />
-      <LayoutContainer className="reorientation-page">
-        <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col transition-opacity duration-1000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <LayoutContainer className="reorientation-page" style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
+        <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
-          <div className="mb-8 flex items-center gap-3">
+          {/* <div className="mb-8 flex items-center gap-3">
             {[...Array(TOTAL_STEPS + 1)].map((_, i) => (
               <div
                 key={i}
@@ -90,11 +107,13 @@ export default function ReorientationPage() {
                 aria-hidden="true"
               />
             ))}
-          </div>
+          </div> */}
 
           <StepPrompt
             label="Reorientation"
             prompt="Reading your words again — what feels quieter now?"
+            onPromptComplete={handlePromptComplete}
+            isReloaded={false}
           />
 
           <ReflectionInput
@@ -110,6 +129,7 @@ export default function ReorientationPage() {
             continueButtonText="Complete"
             userInput={userInput}
             onInputChange={setUserInput}
+            isVisible={inputVisible}
           />
         </div>
       </LayoutContainer>
