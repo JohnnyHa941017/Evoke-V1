@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-2 py-2 md:px-10">
-      <Link
+      {/*<Link
         href="/"
         onClick={handleEvokeClick}
         className="flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors cursor-pointer"
@@ -32,7 +32,7 @@ export function Header() {
           priority
           className="w-20 h-20 object-contain"
         />
-      </Link>
+      </Link>*/}
       {/* <div className="h-px w-12 bg-border" aria-hidden="true" /> */}
     </header>
   )
