@@ -29,23 +29,23 @@ export default function ArrivalPage() {
   useEffect(() => {
     // Check if there's an existing uncompleted session
     const { sessionId, currentStep, completed } = restoreSessionState()
-    if (sessionId && currentStep && !completed) {
-      // Resume existing session
-      router.push(`/reflect/${currentStep}`)
-      return
-    }
+    // if (sessionId && currentStep && !completed) {
+    //   // Resume existing session
+    //   router.push(`/reflect/${currentStep}`)
+    //   return
+    // }
 
     const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
     const contentTimer = setTimeout(() => {
       setContentVisible(true)
       setTitleVisible(true)
-    }, 2100)
+    }, 4100)
 
     // Words appear 1 second after title fades (3 seconds after content visible).
     // Each word fades in over 0.8s, with 0.3s between words.
     // After an entire sentence is displayed, the next sentence begins after a random delay between 2-3 seconds.
     const timers: ReturnType<typeof setTimeout>[] = []
-    let nextTimerDelay = 4100
+    let nextTimerDelay = 8100
     let lastWordRevealTime = nextTimerDelay
 
     sentences.forEach((sentence, sentenceIndex) => {
@@ -91,7 +91,7 @@ export default function ArrivalPage() {
       const { sessionId } = await res.json()
       
       // Save session state to localStorage
-      persistSessionState(sessionId, 1, [], false)
+      //persistSessionState(sessionId, 1, [], false)
       
       // First, fade out content (2 seconds)
       setTimeout(() => {
@@ -127,11 +127,11 @@ export default function ArrivalPage() {
             const visibleCount = visibleWordCounts[sentenceIndex] ?? 0
 
             return (
-              <p key={sentenceIndex} className="transition-opacity duration-800">
+              <p key={sentenceIndex} className="transition-opacity duration-200">
                 {words.map((word, wordIndex) => (
                   <Fragment key={wordIndex}>
                     <span
-                      className={`inline-block transition-opacity duration-800 ${
+                      className={`inline-block transition-opacity duration-2000 ${
                         wordIndex < visibleCount ? "opacity-100" : "opacity-0"
                       }`}
                     >

@@ -20,8 +20,8 @@ export function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-full bg-accent px-8 sm:px-10 md:px-12 py-3 sm:py-4 text-base sm:text-lg md:text-xl font-light tracking-wide text-white shadow-lg transition-opacity hover:opacity-90 disabled:opacity-40 ${className}`}
-      style={{ fontFamily: "ITC Bradley Hand", fontSize: "clamp(18px, 4vw, 28px)" }}
+      className={`rounded-full bg-accent px-8 sm:px-10 md:px-12 py-3 sm:py-4 text-base sm:text-lg md:text-xl font-light tracking-wide text-white shadow-lg hover:opacity-90 disabled:opacity-40 ${className}`}
+      style={{ fontFamily: "ITC Bradley Hand", fontSize: "clamp(14px, 4vw, 22px)" }}
     >
       {children}
     </button>
