@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 interface StepPromptProps {
   label: string
@@ -9,73 +9,105 @@ interface StepPromptProps {
   isReloaded?: boolean
 }
 
+// Parse prompt into flat word list, tagging the last word of each paragraph
+function parseWords(prompt: string): { text: string; afterParagraph: boolean }[] {
+  const paragraphs = prompt
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+
+  const words: { text: string; afterParagraph: boolean }[] = []
+  paragraphs.forEach((para, pIdx) => {
+    const paraWords = para.split(" ").filter((w) => w.length > 0)
+    paraWords.forEach((word, wIdx) => {
+      words.push({
+        text: word,
+        afterParagraph: wIdx === paraWords.length - 1 && pIdx < paragraphs.length - 1,
+      })
+    })
+  })
+  return words
+}
+
 export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: StepPromptProps) {
-  const [visibleLines, setVisibleLines] = useState<number[]>([])
-  
-  const lines = prompt
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-  
+  const words = parseWords(prompt)
+  const paragraphs = prompt.split("\n").map((l) => l.trim()).filter((l) => l.length > 0)
+
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const [lineGroups, setLineGroups] = useState<number[][]>([])
+  const [visibleGroups, setVisibleGroups] = useState<Set<number>>(new Set())
+  const onCompleteRef = useRef(onPromptComplete)
+  useEffect(() => { onCompleteRef.current = onPromptComplete }, [onPromptComplete])
+
+  // Phase 1: measure visual lines after fonts + layout are ready
   useEffect(() => {
-    // If this is a reload, show all lines immediately
     if (isReloaded) {
-      const allLineIndices = lines.map((_, idx) => idx)
-      setVisibleLines(allLineIndices)
-      if (onPromptComplete) {
-        onPromptComplete()
-      }
+      onCompleteRef.current?.()
       return
     }
 
-    // Display each line with fade-in animation
-    // Each line appears after previous line finishes fading (2000ms) + unique random 1-2s delay
-    // Ensure all intervals on this page render are different from each other
-    const timers: ReturnType<typeof setTimeout>[] = []
-    // First line starts 1 second after page load
-    let cumulativeDelay = 3000
+    const measure = () => {
+      const groups: number[][] = []
+      let currentGroup: number[] = []
+      let currentTop: number | null = null
 
-    // Generate unique random intervals for all statements (except first)
-    const intervals: number[] = []
-    for (let i = 1; i < lines.length; i++) {
-      let randomInterval: number
-      // Ensure this interval is not equal to any previous interval
-      do {
-        randomInterval = 1000 + Math.random() * 1000
-      } while (intervals.some(interval => Math.abs(interval - randomInterval) < 1)) // tolerance of 1ms
-      intervals.push(randomInterval)
+      for (let i = 0; i < words.length; i++) {
+        const ref = wordRefs.current[i]
+        if (!ref) continue
+        const top = Math.round(ref.getBoundingClientRect().top)
+        if (currentTop === null || Math.abs(top - currentTop) <= 3) {
+          if (currentTop === null) currentTop = top
+          currentGroup.push(i)
+        } else {
+          if (currentGroup.length) groups.push([...currentGroup])
+          currentGroup = [i]
+          currentTop = top
+        }
+      }
+      if (currentGroup.length) groups.push(currentGroup)
+      setLineGroups(groups)
     }
 
-    let maxDelay = 0
+    let cleanup: (() => void) | undefined
+    if (typeof document !== "undefined" && document.fonts) {
+      let timer: ReturnType<typeof setTimeout>
+      document.fonts.ready.then(() => { timer = setTimeout(measure, 50) })
+      cleanup = () => clearTimeout(timer)
+    } else {
+      const timer = setTimeout(measure, 200)
+      cleanup = () => clearTimeout(timer)
+    }
+    return cleanup
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReloaded, words.length])
 
-    lines.forEach((_, idx) => {
-      if (idx > 0) {
-        // Add fade duration + unique random interval between 1-2 seconds
-        cumulativeDelay += 2000 + intervals[idx - 1]
-      }
-      
-      maxDelay = cumulativeDelay
+  // Phase 2: animate groups once measured
+  useEffect(() => {
+    if (isReloaded || lineGroups.length === 0) return
 
-      timers.push(
-        setTimeout(() => {
-          setVisibleLines((prev) => [...prev, idx])
-        }, cumulativeDelay)
-      )
+    const timers: ReturnType<typeof setTimeout>[] = []
+
+    // Unique random gaps between lines: 1000–2000ms
+    const gaps: number[] = []
+    for (let i = 1; i < lineGroups.length; i++) {
+      let gap: number
+      do { gap = 1000 + Math.random() * 1000 }
+      while (gaps.some((g) => Math.abs(g - gap) < 1))
+      gaps.push(gap)
+    }
+
+    let delay = 2200 // wait for page blur/fade-in to complete
+    lineGroups.forEach((_, groupIdx) => {
+      if (groupIdx > 0) delay += 1000 + gaps[groupIdx - 1]
+      timers.push(setTimeout(() => {
+        setVisibleGroups((prev) => new Set([...prev, groupIdx]))
+      }, delay))
     })
 
-    // Fire callback after all lines are fully displayed (last line finishes fading in)
-    if (onPromptComplete) {
-      timers.push(
-        setTimeout(() => {
-          onPromptComplete()
-        }, maxDelay + 2000)
-      )
-    }
+    timers.push(setTimeout(() => onCompleteRef.current?.(), delay + 1000))
 
-    return () => {
-      timers.forEach(timer => clearTimeout(timer))
-    }
-  }, [lines.length, onPromptComplete, isReloaded])
+    return () => timers.forEach((t) => clearTimeout(t))
+  }, [lineGroups, isReloaded])
 
   return (
     <div className="mb-8 flex flex-col justify-start">
@@ -83,18 +115,31 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
         {/* {label} */}
       </p>
       <div className="text-left font-serif text-xl leading-relaxed text-foreground md:text-2xl">
-        {lines.map((line, idx) => (
-          <p
-            key={idx}
-            className={`transition-all duration-1000 ${
-              visibleLines.includes(idx) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[15px]"
-            }`}
-          >
-            {line}
+        {isReloaded ? (
+          paragraphs.map((para, idx) => <p key={idx}>{para}</p>)
+        ) : (
+          <p>
+            {words.map(({ text, afterParagraph }, wordIdx) => {
+              const groupIdx = lineGroups.findIndex((g) => g.includes(wordIdx))
+              const visible = groupIdx !== -1 && visibleGroups.has(groupIdx)
+              return (
+                <span key={wordIdx}>
+                  <span
+                    ref={(el) => { wordRefs.current[wordIdx] = el }}
+                    className={`inline-block transition-all duration-1000 ${
+                      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[15px]"
+                    }`}
+                  >
+                    {text}
+                  </span>
+                  {" "}
+                  {afterParagraph && <br />}
+                </span>
+              )
+            })}
           </p>
-        ))}
+        )}
       </div>
     </div>
   )
 }
- 
