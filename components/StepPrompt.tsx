@@ -32,7 +32,8 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
     // Each line appears after previous line finishes fading (2000ms) + unique random 1-2s delay
     // Ensure all intervals on this page render are different from each other
     const timers: ReturnType<typeof setTimeout>[] = []
-    let cumulativeDelay = 0
+    // First line starts 1 second after page load
+    let cumulativeDelay = 3000
 
     // Generate unique random intervals for all statements (except first)
     const intervals: number[] = []
@@ -85,8 +86,8 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
         {lines.map((line, idx) => (
           <p
             key={idx}
-            className={`transition-opacity duration-2000 ${
-              visibleLines.includes(idx) ? "opacity-100" : "opacity-0"
+            className={`transition-all duration-1000 ${
+              visibleLines.includes(idx) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[15px]"
             }`}
           >
             {line}
@@ -96,3 +97,4 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
     </div>
   )
 }
+ 

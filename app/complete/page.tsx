@@ -61,18 +61,16 @@ export default function CompletePage() {
             EVOKE
           </p>
           
-          <h1 className={`mb-8 sm:mb-8 md:mb-10 lg:mb-10 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl leading-relaxed text-foreground`}>
-            Your journey is now complete
-          </h1>
-          
-          <div className={`mb-12 sm:mb-8 md:mb-10 lg:mb-12 space-y-2 sm:space-y-3 md:space-y-4`}>
+          <div className={`mb-12 sm:mb-4 md:mb-6 lg:mb-8 space-y-2 sm:space-y-3 md:space-y-4`}>
             {[
-              "You may notice this moment again in the days ahead.",
-              "This space will be here whenever you feel called to return.",
+              "This moment doesn’t end here.",
+"It may unfold quietly…",
+"in the days ahead.",
+"This space remains.",
             ].map((line, idx) => (
               <p
                 key={idx}
-                className={`font-serif leading-relaxed text-foreground text-sm sm:text-base md:text-lg lg:text-xl`}
+                className={`font-serif leading-relaxed text-foreground text-[16px] sm:text-lg md:text-[20px] lg:text-[24px]`}
               >
                 {line}
               </p>
