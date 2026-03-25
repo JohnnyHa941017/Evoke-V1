@@ -195,7 +195,7 @@ export default function ReflectionStepPage({
           <ReflectionInput
             onSubmit={handleSubmitReflection}
             isLoading={isLoading}
-            placeholder="Let the words come without direction..."
+            placeholder="You can write here… or simply sit for a moment"
             stepNumber={stepNumber}
             reflection={reflection}
             onContinue={handleContinue}

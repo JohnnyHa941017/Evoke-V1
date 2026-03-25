@@ -22,7 +22,7 @@ export function ReflectionInput({
   onSubmit,
   stepNumber,
   isLoading = false,
-  placeholder = "Write here...",
+  placeholder = "You can write here… or simply sit for a moment",
   reflection,
   onContinue,
   onBack,
@@ -59,7 +59,7 @@ export function ReflectionInput({
               value={reflection}
               readOnly
               rows={8}
-              className="w-full resize-none rounded-lg border border-accent bg-transparent backdrop-blur-sm px-5 py-6 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-muted-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white/40 disabled:opacity-50"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               aria-label="Reflection display"
             />
           ) : (
@@ -69,7 +69,7 @@ export function ReflectionInput({
               placeholder={placeholder}
               disabled={isLoading}
               rows={8}
-              className="w-full resize-none rounded-lg border border-accent bg-transparent backdrop-blur-sm px-5 py-6 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-muted-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white/40 disabled:opacity-50"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               aria-label="Reflection input"
             />
           )}

@@ -1,10 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useState, useRef } from "react"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { PrimaryButton } from "@/components/PrimaryButton"
-import { restoreSessionState, persistSessionState } from "@/lib/persistence"
+import { restoreSessionState, persistSessionState, clearSessionData } from "@/lib/persistence"
 
 const sentences = [
   "This space is different.",
@@ -12,6 +12,8 @@ const sentences = [
   "You are here to arrive exactly as you are.",
   "This space will be here.",
 ]
+
+type ModalPhase = "settling" | "choosing" | "echo"
 
 export default function ArrivalPage() {
   const router = useRouter()
@@ -26,24 +28,47 @@ export default function ArrivalPage() {
   const [buttonVisible, setButtonVisible] = useState(false)
   const [buttonAnimating, setButtonAnimating] = useState(false)
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
-  useEffect(() => {
-    // Check if there's an existing uncompleted session
-    const { sessionId, currentStep, completed } = restoreSessionState()
-    // if (sessionId && currentStep && !completed) {
-    //   // Resume existing session
-    //   router.push(`/reflect/${currentStep}`)
-    //   return
-    // }
 
+  // Resume modal
+  const [modalPhase, setModalPhase] = useState<ModalPhase | null>(null)
+  const [modalContentVisible, setModalContentVisible] = useState(false)
+  const [resumeStep, setResumeStep] = useState<number | null>(null)
+  const [softEcho, setSoftEcho] = useState<string>("")
+
+  const arrivalCleanupRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    const { sessionId, currentStep, completed, reflections } = restoreSessionState()
+
+    if (sessionId && currentStep && !completed) {
+      setResumeStep(currentStep)
+      setBackgroundVisible(true)
+      // Phase 1: settling
+      setModalPhase("settling")
+      setTimeout(() => setModalContentVisible(true), 400)
+      // Auto-advance to choosing after 2.5s
+      setTimeout(() => {
+        setModalContentVisible(false)
+        setTimeout(() => {
+          setModalPhase("choosing")
+          setModalContentVisible(true)
+        }, 800)
+      }, 3200)
+      return
+    }
+
+    const cleanup = startArrivalSequence()
+    if (cleanup) arrivalCleanupRef.current = cleanup
+    return cleanup
+  }, [])
+
+  function startArrivalSequence() {
     const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
     const contentTimer = setTimeout(() => {
       setContentVisible(true)
       setTitleVisible(true)
     }, 4100)
 
-    // Words appear 1 second after title fades (3 seconds after content visible).
-    // Each word fades in over 0.8s, with 0.3s between words.
-    // After an entire sentence is displayed, the next sentence begins after a random delay between 2-3 seconds.
     const timers: ReturnType<typeof setTimeout>[] = []
     let nextTimerDelay = 8100
     let lastWordRevealTime = nextTimerDelay
@@ -72,41 +97,82 @@ export default function ArrivalPage() {
       setButtonAnimating(true)
     }, lastWordRevealTime + 2000)
 
-    const buttonAnimationEndTimer = setTimeout(() => setButtonAnimating(false), lastWordRevealTime + 4000)
+    const buttonAnimationEndTimer = setTimeout(
+      () => setButtonAnimating(false),
+      lastWordRevealTime + 4000
+    )
 
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
       clearTimeout(buttonTimer)
       clearTimeout(buttonAnimationEndTimer)
-      timers.forEach((timer) => clearTimeout(timer))
+      timers.forEach((t) => clearTimeout(t))
     }
-  }, [router])
+  }
+
+  async function handleResumeContinue() {
+    const { reflections } = restoreSessionState()
+
+    // Fade out choosing phase
+    setModalContentVisible(false)
+
+    // Fetch soft echo while fading
+    let echo = ""
+    try {
+      const res = await fetch("/api/soft-echo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reflections: reflections.map((r) => ({ step: r.step, input: r.input })),
+        }),
+      })
+      const data = await res.json()
+      echo = data.echo || ""
+    } catch {
+      // proceed without echo
+    }
+
+    setTimeout(() => {
+      setSoftEcho(echo)
+      setModalPhase("echo")
+      setModalContentVisible(true)
+      // Navigate after holding the echo
+      setTimeout(() => {
+        setModalContentVisible(false)
+        setTimeout(() => {
+          router.push(`/reflect/${resumeStep}`)
+        }, 1200)
+      }, 3000)
+    }, 2000)
+  }
+
+  function handleResumeBeginAgain() {
+    clearSessionData()
+    setModalContentVisible(false)
+    setTimeout(() => {
+      setModalPhase(null)
+      setBackgroundVisible(false)
+      setContentVisible(false)
+      setTitleVisible(false)
+      setButtonVisible(false)
+      setVisibleWordCounts(sentences.map(() => 0))
+      const cleanup = startArrivalSequence()
+      if (cleanup) arrivalCleanupRef.current = cleanup
+    }, 2000)
+  }
 
   async function handleBegin() {
     setIsStarting(true)
     try {
-      // Create a new session
       const res = await fetch("/api/start-session", { method: "POST" })
       const { sessionId } = await res.json()
-      
-      // Save session state to localStorage
-      //persistSessionState(sessionId, 1, [], false)
-      
-      // First, fade out content (2 seconds)
-      setTimeout(() => {
-        setButtonFadingOut(true)
-      }, 2000)
-      
-      // Then, fade out background (after content is done, for 2 more seconds)
-      setTimeout(() => {
-        setBackgroundFadingOut(true)
-      }, 4000)
-      
-      // Finally, navigate (after background is done fading)
-      setTimeout(() => {
-        router.push("/reflect/1")
-      }, 6000)
+
+      persistSessionState(sessionId, 1, [], false)
+
+      setTimeout(() => setButtonFadingOut(true), 2000)
+      setTimeout(() => setBackgroundFadingOut(true), 4000)
+      setTimeout(() => router.push("/reflect/1"), 6000)
     } catch (error) {
       console.error("Failed to begin session:", error)
       setIsStarting(false)
@@ -114,18 +180,112 @@ export default function ArrivalPage() {
   }
 
   return (
-    <LayoutContainer className={`arrival-page`} style={{ filter: backgroundVisible && !backgroundFadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
-      <div className="absolute bottom-0 left-0 w-full h-[40%] sm:h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
-      <div className={`flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center transition-opacity duration-2000 ${contentVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
-        <p className={`mb-6 sm:mb-4 md:mb-8 lg:mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent transition-opacity duration-1000 ${titleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style", filter: titleVisible ? 'blur(0px)' : 'blur(20px)', transition: 'filter 2000ms ease-out' }} suppressHydrationWarning>
+    <LayoutContainer
+      className="arrival-page"
+      style={{
+        filter: backgroundVisible && !backgroundFadingOut ? "blur(0px)" : "blur(20px)",
+        opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0,
+        transition: "filter 2000ms ease-out, opacity 2000ms ease-out",
+      }}
+    >
+      <div className="absolute bottom-0 left-0 w-full h-[40%] sm:h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none" />
+
+      {/* Re-entry modal */}
+      {modalPhase !== null && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center px-6">
+          {/* settling */}
+          {modalPhase === "settling" && (
+            <div
+              className="text-center"
+              style={{
+                opacity: modalContentVisible ? 1 : 0,
+                transition: "opacity 2000ms ease-out",
+              }}
+            >
+              <p
+                className="text-xl sm:text-2xl font-light leading-loose text-foreground/70"
+                style={{ fontFamily: "Goudy Old Style" }}
+              >
+                You're here again.
+                <br />
+                <span className="text-foreground/40">Take a moment to settle.</span>
+              </p>
+            </div>
+          )}
+
+          {/* choosing */}
+          {modalPhase === "choosing" && (
+            <div
+              className={`w-full max-w-xs text-center transition-opacity duration-2000 ease-out ${
+      modalContentVisible ? "opacity-100" : "opacity-0"
+    }`}
+            >
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={handleResumeContinue}
+                  className="w-full rounded-2xl border border-white/15 py-4 text-sm tracking-widest text-foreground/70 font-light hover:border-white/30 hover:text-foreground/90 transition-colors duration-400"
+                >
+                  Continue from where you were
+                </button>
+                <button
+                  onClick={handleResumeBeginAgain}
+                  className="w-full rounded-2xl border border-white/15 py-4 text-sm tracking-widest text-foreground/70 font-light hover:border-white/30 hover:text-foreground/90 transition-colors duration-400"
+                >
+                  Begin again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* echo */}
+          {modalPhase === "echo" && (
+            <div
+              className="text-center max-w-sm px-4"
+              style={{
+                opacity: modalContentVisible ? 1 : 0,
+                transition: "opacity 2000ms ease-out",
+              }}
+            >
+              <p
+                className="text-lg sm:text-xl font-light leading-relaxed text-foreground/60 italic"
+                style={{ fontFamily: "Goudy Old Style" }}
+              >
+                {softEcho}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Arrival content */}
+      <div
+        className={`flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center transition-opacity duration-2000 ${
+          modalPhase === null && contentVisible && !buttonFadingOut ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <p
+          className={`mb-6 sm:mb-4 md:mb-8 lg:mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent transition-opacity duration-1000 ${
+            titleVisible ? "opacity-100" : "opacity-0"
+          }`}
+          style={{
+            fontFamily: "Goudy Old Style",
+            filter: titleVisible ? "blur(0px)" : "blur(20px)",
+            transition: "filter 2000ms ease-out",
+          }}
+          suppressHydrationWarning
+        >
           EVOKE
         </p>
-        
-        <div className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-foreground text-balance font-light transition-opacity duration-2000 ${visibleWordCounts.some((count) => count > 0) ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: "Goudy Old Style", maxWidth: '100%', wordWrap: 'break-word' }}>
+
+        <div
+          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-foreground text-balance font-light transition-opacity duration-2000 ${
+            visibleWordCounts.some((count) => count > 0) ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ fontFamily: "Goudy Old Style", maxWidth: "100%", wordWrap: "break-word" }}
+        >
           {sentences.map((sentence, sentenceIndex) => {
             const words = sentence.split(" ")
             const visibleCount = visibleWordCounts[sentenceIndex] ?? 0
-
             return (
               <p key={sentenceIndex} className="transition-opacity duration-200">
                 {words.map((word, wordIndex) => (
@@ -147,7 +307,11 @@ export default function ArrivalPage() {
           })}
         </div>
 
-        <div className={`transition-opacity duration-2000 ${buttonVisible && !buttonFadingOut ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+          className={`transition-opacity duration-2000 ${
+            buttonVisible && !buttonFadingOut ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <style>{`
             @keyframes buttonBrighten {
               0% { filter: brightness(1); }
@@ -158,7 +322,11 @@ export default function ArrivalPage() {
               animation: buttonBrighten 2s ease-in-out forwards;
             }
           `}</style>
-          <PrimaryButton onClick={handleBegin} disabled={isStarting} className={buttonAnimating ? 'button-animate' : ''}>
+          <PrimaryButton
+            onClick={handleBegin}
+            disabled={isStarting}
+            className={buttonAnimating ? "button-animate" : ""}
+          >
             {isStarting ? "Entering..." : "Enter the space"}
           </PrimaryButton>
         </div>

@@ -141,6 +141,81 @@ export async function generateReflection(userText: string, stepNumber: any) {
 
 }
 
+export async function generateSoftEcho(reflections: { step: number; input: string }[]) {
+  const combinedInputs = reflections
+    .sort((a, b) => a.step - b.step)
+    .map((r) => r.input)
+    .join("\n\n")
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0.4,
+    max_tokens: 40,
+    messages: [
+      {
+        role: "system",
+        content: `
+          You are a quiet, attentive presence.
+
+          A user is returning to a reflective space after stepping away.
+          They were in the middle of something.
+
+          Your task is to offer a single, soft line that gently reconnects them
+          with the quality or feeling that was present in their previous writing.
+
+          This is not a summary. Not a recap. Not a restatement.
+
+          It is a soft echo — like the lingering feeling of something
+          that was there before they left.
+
+          ––––––––––––––
+
+          Tone
+
+          • Tentative, open, unfinished
+          • Use phrases like: "There was something here about…"
+          • Do not label emotions or analyse
+          • Do not conclude or resolve anything
+          • Leave it open
+
+          ––––––––––––––
+
+          Length
+
+          • One sentence only
+          • Short and quiet
+
+          ––––––––––––––
+
+          Example
+
+          If someone wrote about feeling scattered and overwhelmed:
+          "There was something here about things feeling a little scattered…"
+
+          ––––––––––––––
+
+          Strict Rules
+
+          Do NOT:
+          • Summarise what they wrote
+          • Name emotions directly
+          • Say "you were feeling…" or "you noticed…"
+          • Refer to the session or process
+          • Sound like a system
+
+          Return only the single line. Nothing else.
+        `,
+      },
+      {
+        role: "user",
+        content: combinedInputs,
+      },
+    ],
+  })
+
+  return response.choices[0].message.content
+}
+
 export async function generateReorientation(userText: string) {
   
   const response = await openai.chat.completions.create({
