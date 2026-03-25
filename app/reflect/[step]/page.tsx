@@ -139,17 +139,14 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
     
-    // Check if transitioning to reorientation page (last step)
-    if (stepNumber === TOTAL_STEPS) {
-      // Fade out current page before navigating to reorientation
-      setPageFadingOut(true)
-      setTimeout(() => {
+    setPageFadingOut(true)
+    setTimeout(() => {
+      if (stepNumber === TOTAL_STEPS) {
         router.push("/reorientation")
-      }, 2000)
-    } else if (stepNumber < TOTAL_STEPS) {
-      // Navigate to next reflect page immediately
-      router.push(`/reflect/${stepNumber + 1}`)
-    }
+      } else {
+        router.push(`/reflect/${stepNumber + 1}`)
+      }
+    }, 2000)
   }
 
   function handleBack() {

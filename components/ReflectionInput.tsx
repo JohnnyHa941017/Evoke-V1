@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 
 interface ReflectionInputProps {
@@ -34,9 +35,26 @@ export function ReflectionInput({
   isVisible = true,
 }: ReflectionInputProps) {
   const router = useRouter()
+  const [inputFadingOut, setInputFadingOut] = useState(false)
+  const [reflectionVisible, setReflectionVisible] = useState(false)
+  const submitTimeRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (reflection) {
+      const elapsed = submitTimeRef.current ? Date.now() - submitTimeRef.current : 2000
+      const delay = Math.max(50, 2000 - elapsed)
+      const timer = setTimeout(() => setReflectionVisible(true), delay)
+      return () => clearTimeout(timer)
+    } else {
+      setReflectionVisible(false)
+      setInputFadingOut(false)
+    }
+  }, [reflection])
 
   function handleSubmit() {
     if (!userInput.trim() || isLoading) return
+    setInputFadingOut(true)
+    submitTimeRef.current = Date.now()
     onSubmit(userInput.trim())
   }
 
@@ -60,6 +78,7 @@ export function ReflectionInput({
               readOnly
               rows={8}
               className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection display"
             />
           ) : (
@@ -70,6 +89,7 @@ export function ReflectionInput({
               disabled={isLoading}
               rows={8}
               className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              style={{ opacity: inputFadingOut ? 0 : 1, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection input"
             />
           )}
