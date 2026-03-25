@@ -79,7 +79,7 @@ export default function ReorientationPage() {
       } catch {
         setIsSubmitting(false)
       }
-    }, 3000)
+    }, 4000)
   }
 
   function handlePromptComplete() {

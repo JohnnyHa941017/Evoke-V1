@@ -59,7 +59,7 @@ export default function ReflectionStepPage({
     } else {
       // Navigation within reflection pages - apply 2s fade-in to all steps
       const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
-      const contentTimer = setTimeout(() => setPageVisible(true), 3000)
+      const contentTimer = setTimeout(() => setPageVisible(true), 2000)
       
       return () => {
         clearTimeout(bgTimer)
