@@ -77,7 +77,7 @@ export function ReflectionInput({
               value={reflection}
               readOnly
               rows={8}
-              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection display"
             />
@@ -88,7 +88,7 @@ export function ReflectionInput({
               placeholder={placeholder}
               disabled={isLoading}
               rows={8}
-              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               style={{ opacity: inputFadingOut ? 0 : 1, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection input"
             />
