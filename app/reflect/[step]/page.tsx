@@ -32,6 +32,7 @@ export default function ReflectionStepPage({
   const [isReloaded, setIsReloaded] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(stepNumber > 1)
   const [pageFadingOut, setPageFadingOut] = useState(false)
+  const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
 
   const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
 
@@ -140,13 +141,13 @@ export default function ReflectionStepPage({
     }
     
     setPageFadingOut(true)
-    setTimeout(() => {
-      if (stepNumber === TOTAL_STEPS) {
-        router.push("/reorientation")
-      } else {
-        router.push(`/reflect/${stepNumber + 1}`)
-      }
-    }, 2000)
+    if (stepNumber === TOTAL_STEPS) {
+      // content fades out (2s) + 1s wait, then background fades out (2s), then navigate
+      setTimeout(() => setBackgroundFadingOut(true), 3000)
+      setTimeout(() => router.push("/reorientation"), 5000)
+    } else {
+      setTimeout(() => router.push(`/reflect/${stepNumber + 1}`), 2000)
+    }
   }
 
   function handleBack() {
@@ -166,7 +167,7 @@ export default function ReflectionStepPage({
   return (
     <>
       <Header />
-        <LayoutContainer className="reflection-page" style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: stepNumber === 1 ? 'filter 2000ms ease-out, opacity 2000ms ease-out' : 'none' }}>
+        <LayoutContainer className="reflection-page" style={{ filter: backgroundVisible && !backgroundFadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0, transition: stepNumber === 1 || backgroundFadingOut ? 'filter 2000ms ease-out, opacity 2000ms ease-out' : 'none' }}>
       <div className="absolute bottom-0 left-0 w-full h-[50%] pointer-events-none" style={{ background: `linear-gradient(to top, rgba(0,0,0,${(90 - (stepNumber - 1) * 5) / 100}), transparent)` }}></div>
         <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !pageFadingOut ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
