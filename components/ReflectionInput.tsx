@@ -104,7 +104,7 @@ export function ReflectionInput({
               >
                 {echoRef.current && (
                   <p
-                    className="font-sans text-base sm:text-lg md:text-xl italic text-white/35 tracking-wide"
+                    className="font-sans text-base sm:text-lg md:text-xl italic text-white/60 tracking-wide"
                     style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
                   >
                     {echoRef.current}
@@ -112,7 +112,7 @@ export function ReflectionInput({
                 )}
                 {echoRef.current && (
                   <div
-                    className="my-3 sm:my-4 border-t border-white/15"
+                    className="my-3 sm:my-4 border-t border-white/30"
                     style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
                   />
                 )}
@@ -129,7 +129,7 @@ export function ReflectionInput({
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={isLoading}
-                className="w-full resize-none rounded-xl border border-white/30 bg-white/[0.06] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-white placeholder:italic placeholder:text-white/35 placeholder:font-light focus:outline-none focus:border-white/50 focus:bg-white/[0.09] focus:ring-0 disabled:opacity-50 transition-all duration-500 h-[240px] sm:h-[260px] md:h-[280px]"
+                className="w-full resize-none rounded-xl border border-white/30 bg-white/[0.06] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-white placeholder:italic placeholder:text-white/55 placeholder:font-light focus:outline-none focus:border-white/50 focus:bg-white/[0.09] focus:ring-0 disabled:opacity-50 transition-all duration-500 h-[240px] sm:h-[260px] md:h-[280px]"
                 aria-label="Reflection input"
               />
             </div>

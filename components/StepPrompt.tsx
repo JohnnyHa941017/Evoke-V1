@@ -114,7 +114,7 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
       <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {/* {label} */}
       </p>
-      <div className="text-left font-serif text-lg sm:text-xl md:text-2xl leading-relaxed text-foreground">
+      <div className="text-left font-serif text-lg sm:text-xl md:text-2xl leading-relaxed text-white">
         {isReloaded ? (
           paragraphs.map((para, idx) => <p key={idx}>{para}</p>)
         ) : (

@@ -102,7 +102,7 @@ export default function CompletePage() {
         </p> */}
 
         <div
-          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed sm:leading-loose text-foreground text-balance font-light transition-opacity duration-2000 ${
+          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed sm:leading-loose text-white text-balance font-light transition-opacity duration-2000 ${
             visibleWordCounts.some((count) => count > 0) ? "opacity-100" : "opacity-0"
           }`}
           style={{ fontFamily: "Goudy Old Style", maxWidth: "100%", wordWrap: "break-word" }}
