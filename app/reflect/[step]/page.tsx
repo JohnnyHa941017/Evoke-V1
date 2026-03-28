@@ -168,8 +168,8 @@ export default function ReflectionStepPage({
     <>
       <Header />
         <LayoutContainer className="reflection-page" style={{ filter: backgroundVisible && !backgroundFadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0, transition: stepNumber === 1 || backgroundFadingOut ? 'filter 2000ms ease-out, opacity 2000ms ease-out' : 'none' }}>
-      <div className="absolute bottom-0 left-0 w-full h-[50%] pointer-events-none" style={{ background: `linear-gradient(to top, rgba(0,0,0,${(90 - (stepNumber - 1) * 5) / 100}), transparent)` }}></div>
-        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !pageFadingOut ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="absolute bottom-0 left-0 w-full h-[45%] sm:h-[50%] pointer-events-none" style={{ background: `linear-gradient(to top, rgba(0,0,0,${(90 - (stepNumber - 1) * 5) / 100}), transparent)` }}></div>
+        <div className={`flex flex-col pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-6 sm:pb-8 transition-opacity duration-2000 ${pageVisible && !pageFadingOut ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
           {/* <div className="mb-8 flex items-center gap-3">
             {REFLECTION_STEPS.map((s) => (

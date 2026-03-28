@@ -203,12 +203,12 @@ export default function ArrivalPage() {
               }}
             >
               <p
-                className="text-xl sm:text-2xl font-light leading-loose text-foreground/70"
+                className="text-xl sm:text-2xl font-light leading-loose text-white/70"
                 style={{ fontFamily: "Goudy Old Style" }}
               >
                 You're here again.
                 <br />
-                <span className="text-foreground/40">Take a moment to settle.</span>
+                <span className="text-white/50">Take a moment to settle.</span>
               </p>
             </div>
           )}
@@ -223,13 +223,13 @@ export default function ArrivalPage() {
               <div className="flex flex-col gap-4">
                 <button
                   onClick={handleResumeContinue}
-                  className="w-full rounded-2xl border border-white/15 py-4 text-sm tracking-widest text-foreground/70 font-light hover:border-white/30 hover:text-foreground/90 transition-colors duration-400"
+                  className="w-full rounded-2xl border border-white/30 py-4 text-sm tracking-widest text-white/70 font-light hover:border-white/60 hover:text-white transition-colors duration-400"
                 >
                   Continue from where you were
                 </button>
                 <button
                   onClick={handleResumeBeginAgain}
-                  className="w-full rounded-2xl border border-white/15 py-4 text-sm tracking-widest text-foreground/70 font-light hover:border-white/30 hover:text-foreground/90 transition-colors duration-400"
+                  className="w-full rounded-2xl border border-white/30 py-4 text-sm tracking-widest text-white/70 font-light hover:border-white/60 hover:text-white transition-colors duration-400"
                 >
                   Begin again
                 </button>
@@ -247,7 +247,7 @@ export default function ArrivalPage() {
               }}
             >
               <p
-                className="text-lg sm:text-xl font-light leading-relaxed text-foreground/60 italic"
+                className="text-lg sm:text-xl font-light leading-relaxed text-white/70 italic"
                 style={{ fontFamily: "Goudy Old Style" }}
               >
                 {softEcho}
@@ -278,7 +278,7 @@ export default function ArrivalPage() {
         </p>
 
         <div
-          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-foreground text-balance font-light transition-opacity duration-2000 ${
+          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-white text-balance font-light transition-opacity duration-2000 ${
             visibleWordCounts.some((count) => count > 0) ? "opacity-100" : "opacity-0"
           }`}
           style={{ fontFamily: "Goudy Old Style", maxWidth: "100%", wordWrap: "break-word" }}
