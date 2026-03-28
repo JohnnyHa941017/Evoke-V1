@@ -93,28 +93,31 @@ export function ReflectionInput({
       <div style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? 'auto' : 'none', transition: 'opacity 2000ms ease-out' }}>
         <div className="flex flex-col gap-4 sm:gap-5">
 
-          {/* Soft echo of user's words — only shown with reflection */}
-          {reflection && (
-            <p
-              className="font-serif text-sm sm:text-base italic text-foreground/40 tracking-wide px-1"
-              style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
-            >
-              {echoRef.current}
-            </p>
-          )}
-
           {reflection ? (
             <div
               className="border-l border-accent/40 pl-3 sm:pl-4"
               style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
             >
-              <textarea
-                value={reflection}
-                readOnly
-                rows={5}
-                className="w-full resize-none rounded-xl border border-white/20 bg-white/[0.05] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-foreground focus:outline-none focus:ring-0"
+              <div
+                className="w-full rounded-xl border border-white/20 bg-white/[0.05] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-white h-[240px] sm:h-[260px] md:h-[280px] overflow-y-auto"
                 aria-label="Reflection display"
-              />
+              >
+                {echoRef.current && (
+                  <p
+                    className="font-sans text-base sm:text-lg md:text-xl italic text-white/35 tracking-wide"
+                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
+                  >
+                    {echoRef.current}
+                  </p>
+                )}
+                {echoRef.current && (
+                  <div
+                    className="my-3 sm:my-4 border-t border-white/15"
+                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
+                  />
+                )}
+                <p className="whitespace-pre-wrap">{reflection}</p>
+              </div>
             </div>
           ) : (
             <div
@@ -126,8 +129,7 @@ export function ReflectionInput({
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={isLoading}
-                rows={5}
-                className="w-full resize-none rounded-xl border border-white/30 bg-white/[0.06] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/35 placeholder:font-light focus:outline-none focus:border-white/50 focus:bg-white/[0.09] focus:ring-0 disabled:opacity-50 transition-all duration-500"
+                className="w-full resize-none rounded-xl border border-white/30 bg-white/[0.06] px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-white placeholder:italic placeholder:text-white/35 placeholder:font-light focus:outline-none focus:border-white/50 focus:bg-white/[0.09] focus:ring-0 disabled:opacity-50 transition-all duration-500 h-[240px] sm:h-[260px] md:h-[280px]"
                 aria-label="Reflection input"
               />
             </div>
