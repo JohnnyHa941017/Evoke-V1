@@ -49,11 +49,20 @@ export default function ReflectionStepPage({
   }, [])
 
   useEffect(() => {
+    const shouldFadeOnEnter = stepNumber === 1 || stepNumber >= 4
+
     setPageFadingOut(false)
     setBackgroundFadingOut(false)
-    setPageVisible(false)
     setInputVisible(false)
-    setBackgroundVisible(false)
+
+    // Page 2 and 3 should appear immediately
+    if (shouldFadeOnEnter) {
+      setPageVisible(false)
+      setBackgroundVisible(false)
+    } else {
+      setPageVisible(true)
+      setBackgroundVisible(true)
+    }
 
     const { sessionId, reflections } = restoreSessionState()
 
@@ -79,8 +88,6 @@ export default function ReflectionStepPage({
     setUserInput("")
     setIsReloaded(false)
 
-    const shouldFadeOnEnter = stepNumber === 1 || stepNumber >= 4
-
     let bgTimer: ReturnType<typeof setTimeout> | undefined
     let contentTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -92,9 +99,6 @@ export default function ReflectionStepPage({
       contentTimer = setTimeout(() => {
         setPageVisible(true)
       }, 2000)
-    } else {
-      setBackgroundVisible(true)
-      setPageVisible(true)
     }
 
     updateCurrentStep(stepNumber)
@@ -165,7 +169,7 @@ export default function ReflectionStepPage({
       }
     } else {
       setPageFadingOut(true)
-      setBackgroundFadingOut(false)
+      setBackgroundFadingOut(true)
 
       setTimeout(() => {
         router.push("/reorientation")
@@ -220,7 +224,9 @@ export default function ReflectionStepPage({
           backgroundAttachment: isMobile ? "scroll" : "fixed",
           filter: backgroundIsShown ? "blur(0px)" : "blur(20px)",
           opacity: backgroundIsShown ? 1 : 0,
-          transition: "filter 2000ms ease-out, opacity 2000ms ease-out",
+          transition: shouldUseContentTransition
+            ? "filter 2000ms ease-out, opacity 2000ms ease-out"
+            : "none",
         }}
       >
         <div
