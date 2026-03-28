@@ -278,7 +278,7 @@ export default function ArrivalPage() {
         </p>
 
         <div
-          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-white text-balance font-light transition-opacity duration-2000 ${
+          className={`mb-2 sm:mb-2 md:mb-6 lg:mb-10 space-y-1 sm:space-y-2 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl leading-relaxed sm:leading-loose md:leading-relaxed text-black text-balance font-light transition-opacity duration-2000 ${
             visibleWordCounts.some((count) => count > 0) ? "opacity-100" : "opacity-0"
           }`}
           style={{ fontFamily: "Goudy Old Style", maxWidth: "100%", wordWrap: "break-word" }}
