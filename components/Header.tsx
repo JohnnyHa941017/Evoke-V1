@@ -17,22 +17,19 @@ export function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-2 py-2 md:px-10">
-      {/* <Link
+    <header className="fixed top-6 left-1/2 z-50 -translate-x-1/2 text-[12px] uppercase tracking-[0.25em] text-white/70 opacity-35" 
+      style={{
+            fontFamily: "Goudy Old Style",
+            transition: "filter 2000ms ease-out",
+          }}>
+      <Link
         href="/"
         onClick={handleEvokeClick}
         className="flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors cursor-pointer"
         aria-label="Return to home"
       >
-        <Image
-          src="/logo.png"
-          alt="Evoke Logo"
-          width={40}
-          height={40}
-          priority
-          className="w-20 h-20 object-contain"
-        />
-      </Link> */}
+        Evoke
+      </Link>
       {/* <div className="h-px w-12 bg-border" aria-hidden="true" /> */}
     </header>
   )
