@@ -14,8 +14,8 @@ interface ReflectionInputProps {
   isSubmitting?: boolean
   totalSteps: number
   continueButtonText?: string
-  userInput?: string
   onInputChange?: (text: string) => void
+  userInput?: string
   isVisible?: boolean
 }
 
