@@ -110,11 +110,11 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
   }, [lineGroups, isReloaded])
 
   return (
-    <div className="mb-8 flex flex-col justify-start">
+    <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col justify-start">
       <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {/* {label} */}
       </p>
-      <div className="text-left font-serif text-xl leading-relaxed text-foreground md:text-2xl">
+      <div className="text-left font-serif text-lg sm:text-xl md:text-2xl leading-relaxed text-foreground">
         {isReloaded ? (
           paragraphs.map((para, idx) => <p key={idx}>{para}</p>)
         ) : (
@@ -127,7 +127,7 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
                   <span
                     ref={(el) => { wordRefs.current[wordIdx] = el }}
                     className={`inline-block transition-all duration-1000 ${
-                      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[15px]"
+                      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[10px] md:translate-y-[15px]"
                     }`}
                   >
                     {text}

@@ -71,13 +71,13 @@ export function ReflectionInput({
   return (
     <div className="mt-2">
       <div style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? 'auto' : 'none', transition: 'opacity 2000ms ease-out' }}>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {reflection ? (
             <textarea
               value={reflection}
               readOnly
-              rows={8}
-              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              rows={5}
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection display"
             />
@@ -87,28 +87,28 @@ export function ReflectionInput({
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder={placeholder}
               disabled={isLoading}
-              rows={8}
-              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-7 py-8 font-sans text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
+              rows={5}
+              className="w-full resize-none rounded-2xl border border-white/10 bg-transparent px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-foreground placeholder:italic placeholder:text-white/20 placeholder:font-light focus:outline-none focus:border-white/25 focus:ring-0 disabled:opacity-50 transition-colors duration-500"
               style={{ opacity: inputFadingOut ? 0 : 1, transition: 'opacity 2000ms ease-out' }}
               aria-label="Reflection input"
             />
           )}
         </div>
       </div>
-      <div className="flex gap-3 mt-6" style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? 'auto' : 'none', transition: 'opacity 800ms ease-out 2000ms' }}>
+      <div className="flex gap-3 mt-4 sm:mt-6" style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? 'auto' : 'none', transition: 'opacity 800ms ease-out 2000ms' }}>
         {reflection ? (
           <>
             <button
               onClick={onBack}
               disabled={stepNumber === 1}
-              className="flex-1 rounded-lg border border-white bg-transparent py-3 text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40"
+              className="flex-1 rounded-lg border border-white bg-transparent py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40 min-h-[44px]"
             >
               Back
             </button>
             <button
               onClick={onContinue}
               disabled={isSubmitting}
-              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40"
+              className="flex-1 rounded-lg bg-primary py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40 min-h-[44px]"
             >
               {continueButtonText || (stepNumber < totalSteps ? "Continue" : "Move to closing")}
             </button>
@@ -118,14 +118,14 @@ export function ReflectionInput({
             <button
               onClick={handleBack}
               disabled={stepNumber === 1}
-              className="flex-1 rounded-lg border border-white bg-transparent py-3 text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40"
+              className="flex-1 rounded-lg border border-white bg-transparent py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40 min-h-[44px]"
             >
               Back
             </button>
             <button
               onClick={handleSubmit}
               disabled={!userInput.trim() || isLoading}
-              className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40"
+              className="flex-1 rounded-lg bg-primary py-3 sm:py-3.5 text-xs sm:text-sm font-medium tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-40 min-h-[44px]"
             >
               {isLoading ? "Reflecting..." : "Reflect"}
             </button>
