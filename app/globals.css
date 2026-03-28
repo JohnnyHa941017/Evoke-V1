@@ -116,6 +116,7 @@
 
 @media (max-width: 768px) {
   .reflection-page {
+    background-image: url('/reflection-mobile.png');
     background-attachment: scroll;
   }
 }
