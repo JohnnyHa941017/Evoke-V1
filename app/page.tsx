@@ -26,7 +26,7 @@ export default function ArrivalPage() {
     sentences.map(() => 0)
   )
   const [buttonVisible, setButtonVisible] = useState(false)
-  const [buttonAnimating, setButtonAnimating] = useState(false)
+
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
 
   // Resume modal
@@ -94,19 +94,12 @@ export default function ArrivalPage() {
 
     const buttonTimer = setTimeout(() => {
       setButtonVisible(true)
-      setButtonAnimating(true)
     }, lastWordRevealTime + 2000)
-
-    const buttonAnimationEndTimer = setTimeout(
-      () => setButtonAnimating(false),
-      lastWordRevealTime + 4000
-    )
 
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
       clearTimeout(buttonTimer)
-      clearTimeout(buttonAnimationEndTimer)
       timers.forEach((t) => clearTimeout(t))
     }
   }
@@ -114,7 +107,7 @@ export default function ArrivalPage() {
   async function handleResumeContinue() {
     const { reflections } = restoreSessionState()
 
-    // Fade out choosing phase
+    // Fade out choosing phase content (2s)
     setModalContentVisible(false)
 
     // Fetch soft echo while fading
@@ -133,17 +126,23 @@ export default function ArrivalPage() {
       // proceed without echo
     }
 
+    // After content fades out (2s), fade out background (2s)
     setTimeout(() => {
-      setSoftEcho(echo)
-      setModalPhase("echo")
-      setModalContentVisible(true)
-      // Navigate after holding the echo
+      setBackgroundFadingOut(true)
+
+      // After background fades out (2s), show echo phase
       setTimeout(() => {
-        setModalContentVisible(false)
+        setSoftEcho(echo)
+        setModalPhase("echo")
+        setModalContentVisible(true)
+        // Navigate after holding the echo
         setTimeout(() => {
-          router.push(`/reflect/${resumeStep}`)
-        }, 1200)
-      }, 3000)
+          setModalContentVisible(false)
+          setTimeout(() => {
+            router.push(`/reflect/${resumeStep}`)
+          }, 1200)
+        }, 3000)
+      }, 2000)
     }, 2000)
   }
 
@@ -196,19 +195,19 @@ export default function ArrivalPage() {
           {/* settling */}
           {modalPhase === "settling" && (
             <div
-              className="text-center"
+              className="text-center px-4 sm:px-6"
               style={{
                 opacity: modalContentVisible ? 1 : 0,
                 transition: "opacity 2000ms ease-out",
               }}
             >
               <p
-                className="text-xl sm:text-2xl font-light leading-loose text-white/70"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light leading-relaxed sm:leading-loose text-white"
                 style={{ fontFamily: "Goudy Old Style" }}
               >
-                You're here again.
+                You&#39;re here again.
                 <br />
-                <span className="text-white/50">Take a moment to settle.</span>
+                <span className="text-[#d4c4a8]">Take a moment to settle.</span>
               </p>
             </div>
           )}
@@ -216,20 +215,22 @@ export default function ArrivalPage() {
           {/* choosing */}
           {modalPhase === "choosing" && (
             <div
-              className={`w-full max-w-xs text-center transition-opacity duration-2000 ease-out ${
+              className={`w-full max-w-[90vw] sm:max-w-md md:max-w-lg text-center transition-opacity duration-2000 ease-out ${
       modalContentVisible ? "opacity-100" : "opacity-0"
     }`}
             >
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 sm:gap-5">
                 <button
                   onClick={handleResumeContinue}
-                  className="w-full rounded-2xl border border-white/30 py-4 text-sm tracking-widest text-white/70 font-light hover:border-white/60 hover:text-white transition-colors duration-400"
+                  className="w-full whitespace-nowrap rounded-full border-2 border-[#b8a88a] bg-[#b8a88a]/15 px-6 sm:px-10 py-3.5 sm:py-4 tracking-wide text-white hover:bg-[#b8a88a]/30 hover:border-[#c4b89a] transition-all duration-500"
+                  style={{ fontFamily: "ITC Bradley Hand", fontSize: "clamp(14px, 3.2vw, 22px)" }}
                 >
                   Continue from where you were
                 </button>
                 <button
                   onClick={handleResumeBeginAgain}
-                  className="w-full rounded-2xl border border-white/30 py-4 text-sm tracking-widest text-white/70 font-light hover:border-white/60 hover:text-white transition-colors duration-400"
+                  className="w-full whitespace-nowrap rounded-full border-2 border-white/60 bg-white/10 px-6 sm:px-10 py-3.5 sm:py-4 tracking-wide text-white/90 hover:bg-white/20 hover:border-white/80 transition-all duration-500"
+                  style={{ fontFamily: "ITC Bradley Hand", fontSize: "clamp(14px, 3.2vw, 22px)" }}
                 >
                   Begin again
                 </button>
@@ -308,24 +309,14 @@ export default function ArrivalPage() {
         </div>
 
         <div
-          className={`transition-opacity duration-2000 ${
-            buttonVisible && !buttonFadingOut ? "opacity-100" : "opacity-0"
-          }`}
+          style={{
+            opacity: buttonVisible ? 1 : 0,
+            transition: "opacity 2000ms ease-in",
+          }}
         >
-          <style>{`
-            @keyframes buttonBrighten {
-              0% { filter: brightness(1); }
-              50% { filter: brightness(1.4); }
-              100% { filter: brightness(1); }
-            }
-            .button-animate {
-              animation: buttonBrighten 2s ease-in-out forwards;
-            }
-          `}</style>
           <PrimaryButton
             onClick={handleBegin}
             disabled={isStarting}
-            className={buttonAnimating ? "button-animate" : ""}
           >
             {isStarting ? "Entering..." : "Enter the space"}
           </PrimaryButton>

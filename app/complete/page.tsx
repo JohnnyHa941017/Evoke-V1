@@ -22,7 +22,6 @@ export default function CompletePage() {
     sentences.map(() => 0)
   )
   const [buttonVisible, setButtonVisible] = useState(false)
-  const [buttonAnimating, setButtonAnimating] = useState(false)
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -52,16 +51,7 @@ export default function CompletePage() {
       nextTimerDelay += 2000 + Math.random() * 1000
     })
 
-    timers.push(
-      setTimeout(() => {
-        setButtonVisible(true)
-        setButtonAnimating(true)
-      }, lastWordRevealTime + 2000)
-    )
-
-    timers.push(
-      setTimeout(() => setButtonAnimating(false), lastWordRevealTime + 4000)
-    )
+    timers.push(setTimeout(() => setButtonVisible(true), lastWordRevealTime + 2000))
 
     return () => timers.forEach((t) => clearTimeout(t))
   }, [])
@@ -131,20 +121,13 @@ export default function CompletePage() {
           })}
         </div>
 
-        <div className={`transition-opacity duration-2000 ${buttonVisible ? "opacity-100" : "opacity-0"}`}>
-          <style>{`
-            @keyframes buttonBrighten {
-              0% { filter: brightness(1); }
-              50% { filter: brightness(1.4); }
-              100% { filter: brightness(1); }
-            }
-            .button-animate {
-              animation: buttonBrighten 2s ease-in-out forwards;
-            }
-          `}</style>
-          <div className={buttonAnimating ? "button-animate" : ""}>
-            <PrimaryButton onClick={handleLeave}>Leave Space</PrimaryButton>
-          </div>
+        <div
+          style={{
+            opacity: buttonVisible ? 1 : 0,
+            transition: "opacity 2000ms ease-in",
+          }}
+        >
+          <PrimaryButton onClick={handleLeave}>Leave Space</PrimaryButton>
         </div>
       </div>
     </LayoutContainer>
