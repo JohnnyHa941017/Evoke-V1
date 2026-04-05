@@ -107,7 +107,7 @@ export default function ArrivalPage() {
   async function handleResumeContinue() {
     const { reflections } = restoreSessionState()
 
-    // Fade out choosing phase
+    // Fade out choosing phase content (2s)
     setModalContentVisible(false)
 
     // Fetch soft echo while fading
@@ -126,17 +126,23 @@ export default function ArrivalPage() {
       // proceed without echo
     }
 
+    // After content fades out (2s), fade out background (2s)
     setTimeout(() => {
-      setSoftEcho(echo)
-      setModalPhase("echo")
-      setModalContentVisible(true)
-      // Navigate after holding the echo
+      setBackgroundFadingOut(true)
+
+      // After background fades out (2s), show echo phase
       setTimeout(() => {
-        setModalContentVisible(false)
+        setSoftEcho(echo)
+        setModalPhase("echo")
+        setModalContentVisible(true)
+        // Navigate after holding the echo
         setTimeout(() => {
-          router.push(`/reflect/${resumeStep}`)
-        }, 1200)
-      }, 3000)
+          setModalContentVisible(false)
+          setTimeout(() => {
+            router.push(`/reflect/${resumeStep}`)
+          }, 1200)
+        }, 3000)
+      }, 2000)
     }, 2000)
   }
 
