@@ -25,7 +25,7 @@ export default function ArrivalPage() {
   const [visibleWordCounts, setVisibleWordCounts] = useState<number[]>(() =>
     sentences.map(() => 0)
   )
-  // const [buttonVisible, setButtonVisible] = useState(false)
+  const [buttonVisible, setButtonVisible] = useState(false)
 
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
 
@@ -92,14 +92,14 @@ export default function ArrivalPage() {
       nextTimerDelay += 2000 + Math.random() * 1000
     })
 
-    // const buttonTimer = setTimeout(() => {
-    //   setButtonVisible(true)
-    // }, lastWordRevealTime + 2000)
+    const buttonTimer = setTimeout(() => {
+      setButtonVisible(true)
+    }, lastWordRevealTime + 2000)
 
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
-      // clearTimeout(buttonTimer)
+      clearTimeout(buttonTimer)
       timers.forEach((t) => clearTimeout(t))
     }
   }
@@ -148,7 +148,7 @@ export default function ArrivalPage() {
       setBackgroundVisible(false)
       setContentVisible(false)
       setTitleVisible(false)
-      // setButtonVisible(false)
+      setButtonVisible(false)
       setVisibleWordCounts(sentences.map(() => 0))
       const cleanup = startArrivalSequence()
       if (cleanup) arrivalCleanupRef.current = cleanup
@@ -302,7 +302,12 @@ export default function ArrivalPage() {
           })}
         </div>
 
-        <div>
+        <div
+          style={{
+            opacity: buttonVisible ? 1 : 0,
+            transition: "opacity 2000ms ease-in",
+          }}
+        >
           <PrimaryButton
             onClick={handleBegin}
             disabled={isStarting}
