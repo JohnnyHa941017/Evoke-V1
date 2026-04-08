@@ -160,6 +160,7 @@ export default function ReflectionStepPage({
     if (stepNumber < TOTAL_STEPS) {
       if (shouldFade) {
         setPageFadingOut(true)
+        setBackgroundFadingOut(true)
 
         setTimeout(() => {
           router.push(`/reflect/${stepNumber + 1}`)
@@ -190,6 +191,7 @@ export default function ReflectionStepPage({
     if (stepNumber > 1) {
       if (shouldFade) {
         setPageFadingOut(true)
+        setBackgroundFadingOut(true)
 
         setTimeout(() => {
           router.push(`/reflect/${stepNumber - 1}`)
@@ -206,7 +208,7 @@ export default function ReflectionStepPage({
   }
 
   const backgroundIsShown = backgroundVisible && !backgroundFadingOut
-  const shouldUseContentTransition = stepNumber === 1 || stepNumber >= 4
+  const shouldUseContentTransition = stepNumber === 1 || stepNumber >= 4 || pageFadingOut
 
   return (
     <>
