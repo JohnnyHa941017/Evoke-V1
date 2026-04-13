@@ -28,7 +28,7 @@ export const REFLECTION_STEPS = [
   {
     step: 4,
     label: "Movement",
-    prompt: `As you read what you’ve written, you might notice something about it.
+    prompt: `As you feel into what you have written, you might notice something about it.
     Perhaps a feeling…
     perhaps a pattern…
     or something you hadn’t quite recognized before.`,

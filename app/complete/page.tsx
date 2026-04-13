@@ -27,9 +27,9 @@ export default function CompletePage() {
     const timers: ReturnType<typeof setTimeout>[] = []
 
     timers.push(setTimeout(() => setBackgroundVisible(true), 100))
-    timers.push(setTimeout(() => setTitleVisible(true), 4100))
+    timers.push(setTimeout(() => setTitleVisible(true), 1000))
 
-    let nextTimerDelay = 8100
+    let nextTimerDelay = 2500
     let lastWordRevealTime = nextTimerDelay
 
     sentences.forEach((sentence, sentenceIndex) => {
