@@ -114,7 +114,13 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
       <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {/* {label} */}
       </p>
-      <div className="text-left font-serif text-lg sm:text-xl md:text-2xl leading-relaxed text-black">
+      <div
+        className="text-left font-serif text-lg sm:text-xl md:text-2xl leading-relaxed text-black"
+        style={{
+          textShadow:
+            "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 4px rgba(255,255,255,0.95), 0 0 10px rgba(255,255,255,0.85)",
+        }}
+      >
         {isReloaded ? (
           paragraphs.map((para, idx) => <p key={idx}>{para}</p>)
         ) : (

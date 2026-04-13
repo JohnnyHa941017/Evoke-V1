@@ -126,7 +126,7 @@ export default function ReorientationPage() {
             onBack={handleBack}
             isSubmitting={isSubmitting}
             totalSteps={TOTAL_STEPS + 1}
-            continueButtonText="Complete"
+            continueButtonText="Move to closing"
             userInput={userInput}
             onInputChange={setUserInput}
             isVisible={inputVisible}
