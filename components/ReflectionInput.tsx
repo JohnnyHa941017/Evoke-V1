@@ -127,7 +127,7 @@ export function ReflectionInput({
           ) : (
             <div
               className="border-l-2 border-accent/50 pl-3 sm:pl-4"
-              style={{ opacity: inputFadingOut ? 0 : 1, transition: 'opacity 2000ms ease-out' }}
+              // style={{  }}
             >
               <textarea
                 value={userInput}
@@ -136,9 +136,10 @@ export function ReflectionInput({
                 disabled={isLoading}
                 className="w-full resize-none rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black placeholder:italic placeholder:text-black/75 placeholder:font-light focus:outline-none focus:border-white/60 focus:bg-white/30 focus:ring-0 disabled:opacity-50 h-[240px] sm:h-[260px] md:h-[280px]"
                 style={{
-                  backdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  WebkitBackdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  transition: "backdrop-filter 2000ms ease-out, -webkit-backdrop-filter 2000ms ease-out, background-color 500ms ease-out, border-color 500ms ease-out",
+                  opacity: inputFadingOut ? 0 : 1,
+                  textShadow:
+                    "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
+                  transition: 'opacity 2000ms ease-out',
                 }}
                 aria-label="Reflection input"
               />
