@@ -234,6 +234,7 @@ export default function ReflectionStepPage({
         <div
           className="absolute bottom-0 left-0 w-full h-[45%] sm:h-[50%] pointer-events-none"
           style={{
+            zIndex:-1,
             background: `linear-gradient(to top, rgba(0,0,0,${
               (90 - (stepNumber - 1) * 5) / 100
             }), transparent)`,
