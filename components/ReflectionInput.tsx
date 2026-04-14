@@ -126,7 +126,7 @@ export function ReflectionInput({
             </div>
           ) : (
             <div
-              className="border-l-2 border-accent/50 pl-3 sm:pl-4"
+              className="border-accent/50"
               // style={{  }}
             >
               <textarea
