@@ -140,12 +140,13 @@ export function ReflectionInput({
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={isLoading}
-                className="w-full resize-none rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black placeholder:italic placeholder:text-black/75 placeholder:font-light focus:outline-none focus:border-white/60 focus:bg-white/30 focus:ring-0 disabled:opacity-50 h-[240px] sm:h-[260px] md:h-[280px]"
+                className="w-full resize-none rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black placeholder:italic placeholder:text-black/75 placeholder:font-light focus:outline-none focus:border-white/60 focus:bg-white/30 focus:ring-0 h-[240px] sm:h-[260px] md:h-[280px]"
                 style={{
-                  opacity: inputFadingOut ? 0 : 1,
-                  textShadow:
-                    "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
-                  transition: 'opacity 2000ms ease-out',
+                  color: inputFadingOut ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,1)',
+                  textShadow: inputFadingOut
+                    ? "0 0 1px rgba(255,255,255,0), 0 0 2px rgba(255,255,255,0), 0 0 3px rgba(255,255,255,0), 0 0 5px rgba(255,255,255,0), 0 0 8px rgba(255,255,255,0), 0 0 14px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0)"
+                    : "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
+                  transition: 'color 2000ms ease-out, text-shadow 2000ms ease-out',
                 }}
                 aria-label="Reflection input"
               />
