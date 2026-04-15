@@ -95,16 +95,11 @@ export function ReflectionInput({
 
           {reflection ? (
             <div
-              className="border-l border-accent/40 pl-3 sm:pl-4"
+              className="border-accent/40"
               style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
             >
               <div
-                className="w-full rounded-xl border border-white/30 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black h-[240px] sm:h-[260px] md:h-[280px] overflow-y-auto"
-                style={{
-                  backdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  WebkitBackdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  transition: "backdrop-filter 2000ms ease-out, -webkit-backdrop-filter 2000ms ease-out",
-                }}
+                className="w-full rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black h-[240px] sm:h-[260px] md:h-[280px] overflow-y-auto"
                 aria-label="Reflection display"
               >
                 {echoRef.current && (

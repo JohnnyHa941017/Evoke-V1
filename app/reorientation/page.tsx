@@ -111,7 +111,7 @@ export default function ReorientationPage() {
 
           <StepPrompt
             label="Reorientation"
-            prompt="Reading your words again — what feels quieter now?"
+            prompt="Feeling your words again — what feels quieter now?"
             onPromptComplete={handlePromptComplete}
             isReloaded={false}
           />
