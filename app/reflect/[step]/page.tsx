@@ -155,27 +155,19 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
 
-    const shouldFade = stepNumber >= 3
-
-    if (stepNumber < TOTAL_STEPS) {
-      if (shouldFade) {
-        setPageFadingOut(true)
-        setBackgroundFadingOut(true)
-
-        setTimeout(() => {
-          router.push(`/reflect/${stepNumber + 1}`)
-        }, 2000)
-      } else {
-        router.push(`/reflect/${stepNumber + 1}`)
-      }
-    } else {
-      setPageFadingOut(true)
+    setPageFadingOut(true)
+    if (stepNumber >= 3) {
       setBackgroundFadingOut(true)
-
-      setTimeout(() => {
-        router.push("/reorientation")
-      }, 2000)
     }
+
+    const destination =
+      stepNumber < TOTAL_STEPS
+        ? `/reflect/${stepNumber + 1}`
+        : "/reorientation"
+
+    setTimeout(() => {
+      router.push(destination)
+    }, 2000)
   }
 
   function handleBack() {

@@ -58,10 +58,12 @@ export function ReflectionInput({
     if (reflection) {
       const elapsed = submitTimeRef.current ? Date.now() - submitTimeRef.current : 2000
       const delay = Math.max(50, 2000 - elapsed)
-      // Echo appears slightly before the reflection
-      const echoTimer = setTimeout(() => setEchoVisible(true), Math.max(50, delay - 400))
-      const refTimer = setTimeout(() => setReflectionVisible(true), delay)
-      return () => { clearTimeout(echoTimer); clearTimeout(refTimer) }
+      // Echo and reflection fade in together
+      const timer = setTimeout(() => {
+        setEchoVisible(true)
+        setReflectionVisible(true)
+      }, delay)
+      return () => clearTimeout(timer)
     } else {
       setReflectionVisible(false)
       setEchoVisible(false)
@@ -72,7 +74,7 @@ export function ReflectionInput({
 
   function handleSubmit() {
     if (!userInput.trim() || isLoading) return
-    echoRef.current = distilEcho(userInput)
+    echoRef.current = userInput
     setInputFadingOut(true)
     submitTimeRef.current = Date.now()
     onSubmit(userInput.trim())
@@ -95,22 +97,21 @@ export function ReflectionInput({
 
           {reflection ? (
             <div
-              className="border-l border-accent/40 pl-3 sm:pl-4"
+              className="border-accent/40"
               style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
             >
               <div
-                className="w-full rounded-xl border border-white/30 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black h-[240px] sm:h-[260px] md:h-[280px] overflow-y-auto"
+                className="w-full rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black h-[240px] sm:h-[260px] md:h-[280px] overflow-y-auto"
                 style={{
-                  backdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  WebkitBackdropFilter: isVisible ? "blur(4px)" : "blur(0px)",
-                  transition: "backdrop-filter 2000ms ease-out, -webkit-backdrop-filter 2000ms ease-out",
+                  textShadow:
+                    "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
                 }}
                 aria-label="Reflection display"
               >
                 {echoRef.current && (
                   <p
-                    className="font-sans text-base sm:text-lg md:text-xl italic text-black/60 tracking-wide"
-                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
+                    className="font-sans text-base sm:text-lg md:text-xl text-black tracking-wide whitespace-pre-wrap"
+                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
                   >
                     {echoRef.current}
                   </p>
@@ -118,10 +119,15 @@ export function ReflectionInput({
                 {echoRef.current && (
                   <div
                     className="my-3 sm:my-4 border-t border-black/20"
-                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 1500ms ease-out' }}
+                    style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
                   />
                 )}
-                <p className="whitespace-pre-wrap">{reflection}</p>
+                <p
+                  className="whitespace-pre-wrap"
+                  style={{ opacity: reflectionVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
+                >
+                  {reflection}
+                </p>
               </div>
             </div>
           ) : (
@@ -134,12 +140,13 @@ export function ReflectionInput({
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={isLoading}
-                className="w-full resize-none rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black placeholder:italic placeholder:text-black/75 placeholder:font-light focus:outline-none focus:border-white/60 focus:bg-white/30 focus:ring-0 disabled:opacity-50 h-[240px] sm:h-[260px] md:h-[280px]"
+                className="w-full resize-none rounded-xl border border-white/40 bg-white/25 px-4 py-4 sm:px-6 sm:py-6 md:px-7 md:py-8 font-sans text-base sm:text-lg md:text-xl leading-relaxed text-black placeholder:italic placeholder:text-black/75 placeholder:font-light focus:outline-none focus:border-white/60 focus:bg-white/30 focus:ring-0 h-[240px] sm:h-[260px] md:h-[280px]"
                 style={{
-                  opacity: inputFadingOut ? 0 : 1,
-                  textShadow:
-                    "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
-                  transition: 'opacity 2000ms ease-out',
+                  color: inputFadingOut ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,1)',
+                  textShadow: inputFadingOut
+                    ? "0 0 1px rgba(255,255,255,0), 0 0 2px rgba(255,255,255,0), 0 0 3px rgba(255,255,255,0), 0 0 5px rgba(255,255,255,0), 0 0 8px rgba(255,255,255,0), 0 0 14px rgba(255,255,255,0), 0 0 20px rgba(255,255,255,0)"
+                    : "0 0 1px rgba(255,255,255,1), 0 0 2px rgba(255,255,255,1), 0 0 3px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,1), 0 0 14px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.9)",
+                  transition: 'color 2000ms ease-out, text-shadow 2000ms ease-out',
                 }}
                 aria-label="Reflection input"
               />
