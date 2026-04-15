@@ -19,6 +19,7 @@ export default function ReorientationPage() {
   const [pageVisible, setPageVisible] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
+  const [fadingOut, setFadingOut] = useState(false)
 
   useEffect(() => {
     // Fade in background at 0ms
@@ -60,13 +61,14 @@ export default function ReorientationPage() {
 
   function handleContinue() {
     setIsSubmitting(true)
+    setFadingOut(true)
     const { sessionId, reflections } = restoreSessionState()
-    
+
     // Save reorientation to session
     if (sessionId) {
       persistSessionState(sessionId, TOTAL_STEPS + 1, reflections, true)
     }
-    
+
     setTimeout(async () => {
       try {
         const sessionId = localStorage.getItem("evoke-session-id")
@@ -93,9 +95,9 @@ export default function ReorientationPage() {
   return (
     <>
       <Header />
-      <LayoutContainer className="reorientation-page" style={{ filter: backgroundVisible ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
+      <LayoutContainer className="reorientation-page" style={{ filter: backgroundVisible && !fadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !fadingOut ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
         <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
-        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !fadingOut ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
           {/* <div className="mb-8 flex items-center gap-3">
             {[...Array(TOTAL_STEPS + 1)].map((_, i) => (
