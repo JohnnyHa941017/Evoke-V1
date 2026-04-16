@@ -49,7 +49,7 @@ export default function ReflectionStepPage({
   }, [])
 
   useEffect(() => {
-    const shouldFadeOnEnter = stepNumber === 1 || stepNumber >= 4
+    const shouldFadeOnEnter = stepNumber === 1 || stepNumber >= 6
 
     setPageFadingOut(false)
     setBackgroundFadingOut(false)
@@ -155,15 +155,20 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, nextStep, reflections, false)
     }
 
-    setPageFadingOut(true)
-    if (stepNumber >= 3) {
-      setBackgroundFadingOut(true)
-    }
-
     const destination =
       stepNumber < TOTAL_STEPS
         ? `/reflect/${stepNumber + 1}`
         : "/reorientation"
+
+    if (stepNumber === 3 || stepNumber === 4) {
+      router.push(destination)
+      return
+    }
+
+    setPageFadingOut(true)
+    if (stepNumber >= 5) {
+      setBackgroundFadingOut(true)
+    }
 
     setTimeout(() => {
       router.push(destination)
@@ -178,7 +183,7 @@ export default function ReflectionStepPage({
       persistSessionState(sessionId, stepNumber, reflections, false)
     }
 
-    const shouldFade = stepNumber >= 4
+    const shouldFade = stepNumber >= 6
 
     if (stepNumber > 1) {
       if (shouldFade) {
@@ -200,7 +205,7 @@ export default function ReflectionStepPage({
   }
 
   const backgroundIsShown = backgroundVisible && !backgroundFadingOut
-  const shouldUseContentTransition = stepNumber === 1 || stepNumber >= 4 || pageFadingOut
+  const shouldUseContentTransition = stepNumber === 1 || stepNumber >= 6 || pageFadingOut
 
   return (
     <>
