@@ -7,6 +7,7 @@ interface StepPromptProps {
   prompt: string
   onPromptComplete?: () => void
   isReloaded?: boolean
+  startDelay?: number
 }
 
 // Parse prompt into flat word list, tagging the last word of each paragraph
@@ -29,7 +30,7 @@ function parseWords(prompt: string): { text: string; afterParagraph: boolean }[]
   return words
 }
 
-export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: StepPromptProps) {
+export function StepPrompt({ label, prompt, onPromptComplete, isReloaded, startDelay = 2200 }: StepPromptProps) {
   const words = parseWords(prompt)
   const paragraphs = prompt.split("\n").map((l) => l.trim()).filter((l) => l.length > 0)
 
@@ -96,7 +97,7 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
       gaps.push(gap)
     }
 
-    let delay = 2200 // wait for page blur/fade-in to complete
+    let delay = startDelay
     lineGroups.forEach((_, groupIdx) => {
       if (groupIdx > 0) delay += 1000 + gaps[groupIdx - 1]
       timers.push(setTimeout(() => {
@@ -107,7 +108,7 @@ export function StepPrompt({ label, prompt, onPromptComplete, isReloaded }: Step
     timers.push(setTimeout(() => onCompleteRef.current?.(), delay + 1000))
 
     return () => timers.forEach((t) => clearTimeout(t))
-  }, [lineGroups, isReloaded])
+  }, [lineGroups, isReloaded, startDelay])
 
   return (
     <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col justify-start">
