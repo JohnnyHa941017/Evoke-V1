@@ -32,8 +32,8 @@ export const REFLECTION_STEPS = [
     Perhaps a feeling…
     perhaps a pattern…
     or something you hadn’t quite recognized before.`,
-    background_desktop: '/desk-4.png',
-    background_mobile: '/mobile-4.png'
+    background_desktop: '/reflection.png',
+    background_mobile: '/reflection-mobile.png'
   },
   {
     step: 5,
@@ -41,8 +41,8 @@ export const REFLECTION_STEPS = [
     prompt: `You might allow yourself to sit with what you've just noticed for a moment.
     Without needing to change it.
     Simply noticing what it feels like to acknowledge it.`,
-    background_desktop: '/desk-5.png',
-    background_mobile: '/mobile-5.png'
+    background_desktop: '/reflection.png',
+    background_mobile: '/reflection-mobile.png'
   },
   {
     step: 6,
