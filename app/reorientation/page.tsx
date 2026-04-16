@@ -50,12 +50,8 @@ export default function ReorientationPage() {
     setBackgroundVisible(true)
     // Fade in content at 2000ms (after reflect page finishes fading out)
     const contentTimer = setTimeout(() => setPageVisible(true), 2000)
-    // Fade in input fields at 8000ms (2s later than before)
-    const inputTimer = setTimeout(() => setInputVisible(true), 8000)
-
     return () => {
       clearTimeout(contentTimer)
-      clearTimeout(inputTimer)
     }
   }, [])
 
@@ -108,7 +104,7 @@ export default function ReorientationPage() {
   }
 
   function handlePromptComplete() {
-    setInputVisible(true)
+    setTimeout(() => setInputVisible(true), 2000)
   }
 
   function handleBack() {
