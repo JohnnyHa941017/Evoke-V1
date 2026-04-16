@@ -7,7 +7,7 @@ import { LayoutContainer } from "@/components/LayoutContainer"
 import { StepPrompt } from "@/components/StepPrompt"
 import { ReflectionInput } from "@/components/ReflectionInput"
 import { REFLECTION_STEPS, TOTAL_STEPS } from "@/lib/prompts/reflectionPrompts"
-import { restoreSessionState, persistSessionState } from "@/lib/persistence"
+import { restoreSessionState, persistSessionState, getSavedReflections } from "@/lib/persistence"
 
 export default function ReorientationPage() {
   const router = useRouter()
@@ -20,6 +20,38 @@ export default function ReorientationPage() {
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
   const [fadingOut, setFadingOut] = useState(false)
+  const [savedInputs, setSavedInputs] = useState<string[]>([])
+  const [currentInputIndex, setCurrentInputIndex] = useState(0)
+  const [inputTextVisible, setInputTextVisible] = useState(false)
+
+  useEffect(() => {
+    const reflections = getSavedReflections()
+    const inputs = reflections
+      .sort((a, b) => a.step - b.step)
+      .map((r) => r.input)
+      .filter(Boolean)
+    setSavedInputs(inputs)
+  }, [])
+
+  useEffect(() => {
+    if (savedInputs.length === 0 || !pageVisible) return
+
+    const fadeIn = 2000
+    const hold = 3000
+    const fadeOut = 2000
+
+    setInputTextVisible(true)
+
+    const interval = setInterval(() => {
+      setInputTextVisible(false)
+      setTimeout(() => {
+        setCurrentInputIndex((prev) => (prev + 1) % savedInputs.length)
+        setInputTextVisible(true)
+      }, fadeOut)
+    }, fadeIn + hold)
+
+    return () => clearInterval(interval)
+  }, [savedInputs, pageVisible])
 
   useEffect(() => {
     // Fade in background at 0ms
@@ -96,24 +128,27 @@ export default function ReorientationPage() {
     <>
       <Header />
       <LayoutContainer className="reorientation-page" style={{ filter: backgroundVisible && !fadingOut ? 'blur(0px)' : 'blur(20px)', opacity: backgroundVisible && !fadingOut ? 1 : 0, transition: 'filter 2000ms ease-out, opacity 2000ms ease-out' }}>
-        <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-black/40 to-transparent pointer-events-none relative z-0"></div>
         <div className={`flex flex-col transition-opacity duration-2000 ${pageVisible && !fadingOut ? 'opacity-100' : 'opacity-0'}`}>
           {/* Step indicator */}
-          {/* <div className="mb-8 flex items-center gap-3">
-            {[...Array(TOTAL_STEPS + 1)].map((_, i) => (
-              <div
-                key={i}
-                className={`h-px flex-1 ${
-                  i < TOTAL_STEPS + 1 ? "bg-foreground/30" : "bg-border"
-                }`}
-                aria-hidden="true"
-              />
-            ))}
-          </div> */}
-
+          <div className="mb-8 flex items-center gap-3 text-lg" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>
+            Feeling your words again
+          </div>
+          <div className="relative mb-8 h-[3.5rem]">
+            <div
+              className="absolute inset-0 flex items-center gap-3 text-lg italic"
+              style={{
+                textShadow: '0 0 10px rgba(255,255,255,0.5)',
+                opacity: inputTextVisible ? 1 : 0,
+                transition: 'opacity 2000ms ease-in-out',
+              }}
+            >
+              {savedInputs[currentInputIndex] || ''}
+            </div>
+          </div>
           <StepPrompt
             label="Reorientation"
-            prompt="Feeling your words again — what feels quieter now?"
+            prompt="What feels quieter now?"
             onPromptComplete={handlePromptComplete}
             isReloaded={false}
           />
