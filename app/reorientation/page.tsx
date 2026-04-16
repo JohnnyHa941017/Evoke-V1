@@ -20,49 +20,40 @@ export default function ReorientationPage() {
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [inputVisible, setInputVisible] = useState(false)
   const [fadingOut, setFadingOut] = useState(false)
-  const [savedInputs, setSavedInputs] = useState<string[]>([])
-  const [currentInputIndex, setCurrentInputIndex] = useState(0)
-  const [inputTextVisible, setInputTextVisible] = useState(false)
+  const [excerpts, setExcerpts] = useState<string[]>([])
+  const [excerptsVisible, setExcerptsVisible] = useState(false)
 
   useEffect(() => {
     const reflections = getSavedReflections()
-    const inputs = reflections
-      .sort((a, b) => a.step - b.step)
-      .map((r) => r.input)
-      .filter(Boolean)
-    setSavedInputs(inputs)
+    if (reflections.length === 0) return
+
+    fetch("/api/excerpts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reflections }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.excerpts) setExcerpts(data.excerpts)
+      })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
-    if (savedInputs.length === 0 || !pageVisible) return
-
-    const fadeIn = 2000
-    const hold = 3000
-    const fadeOut = 2000
-
-    setInputTextVisible(true)
-
-    const interval = setInterval(() => {
-      setInputTextVisible(false)
-      setTimeout(() => {
-        setCurrentInputIndex((prev) => (prev + 1) % savedInputs.length)
-        setInputTextVisible(true)
-      }, fadeOut)
-    }, fadeIn + hold)
-
-    return () => clearInterval(interval)
-  }, [savedInputs, pageVisible])
+    if (excerpts.length === 0 || !pageVisible) return
+    const timer = setTimeout(() => setExcerptsVisible(true), 500)
+    return () => clearTimeout(timer)
+  }, [excerpts, pageVisible])
 
   useEffect(() => {
-    // Fade in background at 0ms
-    const bgTimer = setTimeout(() => setBackgroundVisible(true), 100)
+    // Fade in background immediately (image preloaded from previous page)
+    setBackgroundVisible(true)
     // Fade in content at 2000ms (after reflect page finishes fading out)
     const contentTimer = setTimeout(() => setPageVisible(true), 2000)
     // Fade in first element at 6000ms (2s delay + 2s content fade + 2s extra)
     const inputTimer = setTimeout(() => setInputVisible(true), 6000)
-    
+
     return () => {
-      clearTimeout(bgTimer)
       clearTimeout(contentTimer)
       clearTimeout(inputTimer)
     }
@@ -134,17 +125,20 @@ export default function ReorientationPage() {
           <div className="mb-8 flex items-center gap-3 text-lg" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>
             Feeling your words again
           </div>
-          <div className="relative mb-8 h-[3.5rem]">
-            <div
-              className="absolute inset-0 flex items-center gap-3 text-lg italic"
-              style={{
-                textShadow: '0 0 10px rgba(255,255,255,0.5)',
-                opacity: inputTextVisible ? 1 : 0,
-                transition: 'opacity 2000ms ease-in-out',
-              }}
-            >
-              {savedInputs[currentInputIndex] || ''}
-            </div>
+          <div className="mb-16 flex flex-col gap-4">
+            {excerpts.map((excerpt, i) => (
+              <div
+                key={i}
+                className="text-lg italic"
+                style={{
+                  textShadow: '0 0 10px rgba(255,255,255,0.5)',
+                  opacity: excerptsVisible ? 1 : 0,
+                  transition: `opacity 2000ms ease-in-out ${i * 800}ms`,
+                }}
+              >
+                {excerpt}
+              </div>
+            ))}
           </div>
           <StepPrompt
             label="Reorientation"

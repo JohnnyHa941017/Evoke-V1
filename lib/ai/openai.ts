@@ -245,6 +245,49 @@ export async function generateSoftEcho(reflections: { step: number; input: strin
   return response.choices[0].message.content
 }
 
+export async function generateExcerpts(reflections: { step: number; input: string }[]) {
+  const combinedInputs = reflections
+    .sort((a, b) => a.step - b.step)
+    .map((r) => `Step ${r.step}: "${r.input}"`)
+    .join("\n")
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0.3,
+    max_tokens: 80,
+    messages: [
+      {
+        role: "system",
+        content: `You are selecting very short phrases from a user's reflective writing.
+
+Pick 2 or 3 short excerpts from across their writing — not from every step, just 2-3 that carry a quiet emotional weight.
+
+Each excerpt must be:
+• A direct phrase from what the user actually wrote (their exact words)
+• Very short — 4 to 8 words maximum
+• Emotionally resonant but not dramatic
+• Ending with an ellipsis (…)
+
+Do NOT:
+• Rewrite or paraphrase — use their exact words
+• Pick from consecutive steps — spread across the experience
+• Add quotation marks
+• Add labels, numbers, or explanations
+• Pick more than 3 excerpts
+
+Return each excerpt on its own line. Nothing else.`,
+      },
+      {
+        role: "user",
+        content: combinedInputs,
+      },
+    ],
+  })
+
+  const text = response.choices[0].message.content || ""
+  return text.split("\n").map((line) => line.trim()).filter(Boolean).slice(0, 3)
+}
+
 export async function generateReorientation(userText: string) {
   
   const response = await openai.chat.completions.create({

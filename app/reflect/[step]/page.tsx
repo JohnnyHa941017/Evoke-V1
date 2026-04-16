@@ -165,6 +165,12 @@ export default function ReflectionStepPage({
         ? `/reflect/${stepNumber + 1}`
         : "/reorientation"
 
+    // Preload next background image to prevent flicker on transition
+    if (stepNumber >= TOTAL_STEPS) {
+      const img = new Image()
+      img.src = "/reorientation.png"
+    }
+
     setTimeout(() => {
       router.push(destination)
     }, 2000)
