@@ -121,7 +121,7 @@ export default function ReorientationPage() {
           <div className="mb-8 flex items-center gap-3 text-lg" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>
             Feeling your words again
           </div>
-          <div className="mb-16 flex flex-col gap-4">
+          <div className="mb-8 flex flex-col gap-4">
             {excerpts.map((excerpt, i) => (
               <div
                 key={i}
