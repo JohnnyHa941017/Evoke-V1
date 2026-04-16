@@ -50,8 +50,8 @@ export default function ReorientationPage() {
     setBackgroundVisible(true)
     // Fade in content at 2000ms (after reflect page finishes fading out)
     const contentTimer = setTimeout(() => setPageVisible(true), 2000)
-    // Fade in first element at 6000ms (2s delay + 2s content fade + 2s extra)
-    const inputTimer = setTimeout(() => setInputVisible(true), 6000)
+    // Fade in input fields at 8000ms (2s later than before)
+    const inputTimer = setTimeout(() => setInputVisible(true), 8000)
 
     return () => {
       clearTimeout(contentTimer)
@@ -133,7 +133,7 @@ export default function ReorientationPage() {
                 style={{
                   textShadow: '0 0 10px rgba(255,255,255,0.5)',
                   opacity: excerptsVisible ? 1 : 0,
-                  transition: `opacity 2000ms ease-in-out ${i * 800}ms`,
+                  transition: `opacity 2000ms ease-in-out ${2000+i * 2000}ms`,
                 }}
               >
                 {excerpt}
@@ -145,7 +145,7 @@ export default function ReorientationPage() {
             prompt="What feels quieter now?"
             onPromptComplete={handlePromptComplete}
             isReloaded={false}
-            startDelay={4200}
+            startDelay={12200}
           />
 
           <ReflectionInput
