@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useState, useRef } from "react"
 import { LayoutContainer } from "@/components/LayoutContainer"
-import { PrimaryButton } from "@/components/PrimaryButton"
 import { restoreSessionState, persistSessionState, clearSessionData } from "@/lib/persistence"
 
 const sentences = [
@@ -17,15 +16,16 @@ type ModalPhase = "settling" | "choosing" | "echo"
 
 export default function ArrivalPage() {
   const router = useRouter()
-  const [isStarting, setIsStarting] = useState(false)
   const [buttonFadingOut, setButtonFadingOut] = useState(false)
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
   const [titleVisible, setTitleVisible] = useState(false)
+  const [enterButtonVisible, setEnterButtonVisible] = useState(false)
+  const [enterButtonReady, setEnterButtonReady] = useState(false)
+  const [entering, setEntering] = useState(false)
   const [visibleWordCounts, setVisibleWordCounts] = useState<number[]>(() =>
     sentences.map(() => 0)
   )
-  const [buttonVisible, setButtonVisible] = useState(false)
 
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
 
@@ -93,13 +93,18 @@ export default function ArrivalPage() {
     })
 
     const buttonTimer = setTimeout(() => {
-      setButtonVisible(true)
+      setEnterButtonVisible(true)
     }, lastWordRevealTime + 2000)
+
+    const buttonReadyTimer = setTimeout(() => {
+      setEnterButtonReady(true)
+    }, lastWordRevealTime + 2000 + 2000)
 
     return () => {
       clearTimeout(bgTimer)
       clearTimeout(contentTimer)
       clearTimeout(buttonTimer)
+      clearTimeout(buttonReadyTimer)
       timers.forEach((t) => clearTimeout(t))
     }
   }
@@ -154,15 +159,23 @@ export default function ArrivalPage() {
       setBackgroundVisible(false)
       setContentVisible(false)
       setTitleVisible(false)
-      setButtonVisible(false)
+      setEnterButtonVisible(false)
+      setEnterButtonReady(false)
+      setEntering(false)
+      setButtonFadingOut(false)
       setVisibleWordCounts(sentences.map(() => 0))
       const cleanup = startArrivalSequence()
       if (cleanup) arrivalCleanupRef.current = cleanup
     }, 2000)
   }
 
+  function handleEnterClick() {
+    if (entering) return
+    setEntering(true)
+    handleBegin()
+  }
+
   async function handleBegin() {
-    setIsStarting(true)
     try {
       const res = await fetch("/api/start-session", { method: "POST" })
       const { sessionId } = await res.json()
@@ -174,7 +187,6 @@ export default function ArrivalPage() {
       setTimeout(() => router.push("/reflect/1"), 6000)
     } catch (error) {
       console.error("Failed to begin session:", error)
-      setIsStarting(false)
     }
   }
 
@@ -308,19 +320,28 @@ export default function ArrivalPage() {
           })}
         </div>
 
-        <div
+        <button
+          onClick={handleEnterClick}
+          disabled={entering || !enterButtonVisible}
+          aria-label={entering ? "Entering the space" : "Enter the space"}
+          className={`mt-6 sm:mt-8 md:mt-10 whitespace-nowrap rounded-full border-2 border-[#b8a88a] bg-[#b8a88a]/15 px-8 sm:px-12 py-3.5 sm:py-4 tracking-wide text-white disabled:cursor-default ${
+            enterButtonReady && !entering
+              ? "hover:bg-[#b8a88a]/30 hover:border-[#c4b89a]"
+              : ""
+          }`}
           style={{
-            opacity: buttonVisible ? 1 : 0,
-            transition: "opacity 2000ms ease-in",
+            fontFamily: "ITC Bradley Hand",
+            fontSize: "clamp(14px, 3.2vw, 22px)",
+            opacity: enterButtonVisible ? 1 : 0,
+            pointerEvents: enterButtonReady && !entering ? "auto" : "none",
+            willChange: "opacity",
+            transform: "translateZ(0)",
+            transition:
+              "opacity 2000ms ease-out, background-color 300ms ease-out, border-color 300ms ease-out",
           }}
         >
-          <PrimaryButton
-            onClick={handleBegin}
-            disabled={isStarting}
-          >
-            {isStarting ? "Entering..." : "Enter the space"}
-          </PrimaryButton>
-        </div>
+          {entering ? "Entering the space." : "Enter the space"}
+        </button>
       </div>
     </LayoutContainer>
   )

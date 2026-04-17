@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
-import { PrimaryButton } from "@/components/PrimaryButton"
 import { clearSessionData, markSessionCompleted } from "@/lib/persistence"
 
 const sentences = [
@@ -21,7 +20,6 @@ export default function CompletePage() {
   const [visibleWordCounts, setVisibleWordCounts] = useState<number[]>(() =>
     sentences.map(() => 0)
   )
-  const [buttonVisible, setButtonVisible] = useState(false)
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -51,7 +49,7 @@ export default function CompletePage() {
       nextTimerDelay += 2000 + Math.random() * 1000
     })
 
-    timers.push(setTimeout(() => setButtonVisible(true), lastWordRevealTime + 2000))
+    timers.push(setTimeout(() => handleLeave(), lastWordRevealTime + 2000))
 
     return () => timers.forEach((t) => clearTimeout(t))
   }, [])
@@ -121,14 +119,6 @@ export default function CompletePage() {
           })}
         </div>
 
-        <div
-          style={{
-            opacity: buttonVisible ? 1 : 0,
-            transition: "opacity 2000ms ease-in",
-          }}
-        >
-          <PrimaryButton onClick={handleLeave}>Leave Space</PrimaryButton>
-        </div>
       </div>
     </LayoutContainer>
   )
