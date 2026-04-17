@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
 import { StepPrompt } from "@/components/StepPrompt"
@@ -20,6 +20,8 @@ interface Props {
 
 export function ReflectSteps1To5({ initialStep }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fadeOnEnter = searchParams.get("fade") === "1"
 
   const [currentStep, setCurrentStep] = useState(initialStep)
   const [reflection, setReflection] = useState<string | null>(null)
@@ -32,6 +34,7 @@ export function ReflectSteps1To5({ initialStep }: Props) {
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [pageFadingOut, setPageFadingOut] = useState(false)
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
+  const [initialFadeInActive, setInitialFadeInActive] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
   const stepMeta = REFLECTION_STEPS.find((s) => s.step === currentStep)
@@ -49,7 +52,7 @@ export function ReflectSteps1To5({ initialStep }: Props) {
 
   // Initial mount only: match the current page's entry behavior for `initialStep`.
   useEffect(() => {
-    const shouldFadeOnEnter = initialStep === 1
+    const shouldFadeOnEnter = initialStep === 1 || fadeOnEnter
 
     setPageFadingOut(false)
     setBackgroundFadingOut(false)
@@ -58,9 +61,11 @@ export function ReflectSteps1To5({ initialStep }: Props) {
     if (shouldFadeOnEnter) {
       setPageVisible(false)
       setBackgroundVisible(false)
+      setInitialFadeInActive(true)
     } else {
       setPageVisible(true)
       setBackgroundVisible(true)
+      setInitialFadeInActive(false)
     }
 
     const { sessionId, reflections } = restoreSessionState()
@@ -75,20 +80,21 @@ export function ReflectSteps1To5({ initialStep }: Props) {
     if (existingReflection) {
       setUserInput(existingReflection.input)
       setReflection(existingReflection.response)
-      setBackgroundVisible(true)
-      setPageVisible(true)
       setInputVisible(true)
       setIsReloaded(true)
-      updateCurrentStep(initialStep)
-      return
+      if (!shouldFadeOnEnter) {
+        setBackgroundVisible(true)
+        setPageVisible(true)
+      }
+    } else {
+      setReflection(null)
+      setUserInput("")
+      setIsReloaded(false)
     }
-
-    setReflection(null)
-    setUserInput("")
-    setIsReloaded(false)
 
     let bgTimer: ReturnType<typeof setTimeout> | undefined
     let contentTimer: ReturnType<typeof setTimeout> | undefined
+    let fadeDoneTimer: ReturnType<typeof setTimeout> | undefined
 
     if (shouldFadeOnEnter) {
       bgTimer = setTimeout(() => {
@@ -98,6 +104,10 @@ export function ReflectSteps1To5({ initialStep }: Props) {
       contentTimer = setTimeout(() => {
         setPageVisible(true)
       }, 2000)
+
+      fadeDoneTimer = setTimeout(() => {
+        setInitialFadeInActive(false)
+      }, 2500)
     }
 
     updateCurrentStep(initialStep)
@@ -105,8 +115,9 @@ export function ReflectSteps1To5({ initialStep }: Props) {
     return () => {
       if (bgTimer) clearTimeout(bgTimer)
       if (contentTimer) clearTimeout(contentTimer)
+      if (fadeDoneTimer) clearTimeout(fadeDoneTimer)
     }
-  }, [initialStep, router])
+  }, [initialStep, router, fadeOnEnter])
 
   function loadStepIntoState(targetStep: number) {
     const { reflections } = restoreSessionState()
@@ -222,7 +233,8 @@ export function ReflectSteps1To5({ initialStep }: Props) {
   }
 
   const backgroundIsShown = backgroundVisible && !backgroundFadingOut
-  const shouldUseTransition = currentStep === 1 || pageFadingOut || backgroundFadingOut
+  const shouldUseTransition =
+    initialFadeInActive || pageFadingOut || backgroundFadingOut
 
   return (
     <>

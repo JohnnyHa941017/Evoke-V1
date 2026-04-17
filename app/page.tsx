@@ -144,7 +144,7 @@ export default function ArrivalPage() {
         setTimeout(() => {
           setModalContentVisible(false)
           setTimeout(() => {
-            router.push(`/reflect/${resumeStep}`)
+            router.push(`/reflect/${resumeStep}?fade=1`)
           }, 1200)
         }, 3000)
       }, 2000)
@@ -184,7 +184,7 @@ export default function ArrivalPage() {
 
       setTimeout(() => setButtonFadingOut(true), 2000)
       setTimeout(() => setBackgroundFadingOut(true), 4000)
-      setTimeout(() => router.push("/reflect/1"), 6000)
+      setTimeout(() => router.push("/reflect/1?fade=1"), 6000)
     } catch (error) {
       console.error("Failed to begin session:", error)
     }
