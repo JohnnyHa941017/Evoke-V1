@@ -85,6 +85,10 @@ export function ReflectionInput({
   }
 
   function handleBack() {
+    if (onBack) {
+      onBack()
+      return
+    }
     if (stepNumber > 1) {
       router.push(`/reflect/${stepNumber - 1}`)
     }

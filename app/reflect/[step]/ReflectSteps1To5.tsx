@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
@@ -13,26 +13,15 @@ import {
   saveReflection,
   updateCurrentStep,
 } from "@/lib/persistence"
-import { ReflectSteps1To5 } from "./ReflectSteps1To5"
 
-export default function ReflectionStepPage({
-  params,
-}: {
-  params: Promise<{ step: string }>
-}) {
-  const { step: stepParam } = use(params)
-  const stepNumber = parseInt(stepParam, 10)
-
-  if (stepNumber >= 1 && stepNumber <= 5) {
-    return <ReflectSteps1To5 initialStep={stepNumber} />
-  }
-
-  return <ReflectStepSingle stepNumber={stepNumber} />
+interface Props {
+  initialStep: number
 }
 
-function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
+export function ReflectSteps1To5({ initialStep }: Props) {
   const router = useRouter()
 
+  const [currentStep, setCurrentStep] = useState(initialStep)
   const [reflection, setReflection] = useState<string | null>(null)
   const [userInput, setUserInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +34,7 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
   const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  const currentStep = REFLECTION_STEPS.find((s) => s.step === stepNumber)
+  const stepMeta = REFLECTION_STEPS.find((s) => s.step === currentStep)
 
   useEffect(() => {
     const checkScreen = () => {
@@ -58,14 +47,14 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
     return () => window.removeEventListener("resize", checkScreen)
   }, [])
 
+  // Initial mount only: match the current page's entry behavior for `initialStep`.
   useEffect(() => {
-    const shouldFadeOnEnter = stepNumber === 1 || stepNumber >= 6
+    const shouldFadeOnEnter = initialStep === 1
 
     setPageFadingOut(false)
     setBackgroundFadingOut(false)
     setInputVisible(false)
 
-    // Page 2 and 3 should appear immediately
     if (shouldFadeOnEnter) {
       setPageVisible(false)
       setBackgroundVisible(false)
@@ -81,7 +70,7 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
       return
     }
 
-    const existingReflection = reflections.find((r) => r.step === stepNumber)
+    const existingReflection = reflections.find((r) => r.step === initialStep)
 
     if (existingReflection) {
       setUserInput(existingReflection.input)
@@ -90,7 +79,7 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
       setPageVisible(true)
       setInputVisible(true)
       setIsReloaded(true)
-      updateCurrentStep(stepNumber)
+      updateCurrentStep(initialStep)
       return
     }
 
@@ -111,13 +100,42 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
       }, 2000)
     }
 
-    updateCurrentStep(stepNumber)
+    updateCurrentStep(initialStep)
 
     return () => {
       if (bgTimer) clearTimeout(bgTimer)
       if (contentTimer) clearTimeout(contentTimer)
     }
-  }, [stepNumber, router])
+  }, [initialStep, router])
+
+  function loadStepIntoState(targetStep: number) {
+    const { reflections } = restoreSessionState()
+    const existing = reflections.find((r) => r.step === targetStep)
+
+    if (existing) {
+      setUserInput(existing.input)
+      setReflection(existing.response)
+      setInputVisible(true)
+      setIsReloaded(true)
+    } else {
+      setUserInput("")
+      setReflection(null)
+      setInputVisible(false)
+      setIsReloaded(false)
+    }
+  }
+
+  function swapToStep(targetStep: number) {
+    window.history.replaceState(null, "", `/reflect/${targetStep}`)
+    updateCurrentStep(targetStep)
+    loadStepIntoState(targetStep)
+    setCurrentStep(targetStep)
+    setPageFadingOut(false)
+    setBackgroundFadingOut(false)
+    setPageVisible(true)
+    setBackgroundVisible(true)
+    setIsSubmitting(false)
+  }
 
   function handlePromptComplete() {
     setInputVisible(true)
@@ -135,7 +153,7 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId,
-          stepNumber,
+          stepNumber: currentStep,
           input,
         }),
       })
@@ -144,7 +162,7 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
       setReflection(data.reflection)
 
       if (sessionId) {
-        saveReflection(sessionId, stepNumber, input, data.reflection)
+        saveReflection(sessionId, currentStep, input, data.reflection)
       }
     } catch {
       setReflection("A moment of stillness occurred. Please try again.")
@@ -159,29 +177,28 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
     const { sessionId, reflections } = restoreSessionState()
 
     if (sessionId && reflection) {
-      saveReflection(sessionId, stepNumber, userInput, reflection)
+      saveReflection(sessionId, currentStep, userInput, reflection)
 
-      const nextStep = stepNumber < TOTAL_STEPS ? stepNumber + 1 : stepNumber
+      const nextStep = currentStep < TOTAL_STEPS ? currentStep + 1 : currentStep
       persistSessionState(sessionId, nextStep, reflections, false)
     }
 
-    const destination =
-      stepNumber < TOTAL_STEPS
-        ? `/reflect/${stepNumber + 1}`
-        : "/reorientation"
+    if (currentStep === 5) {
+      // 5 → 6: fade both content and background, then hand off to /reflect/6
+      setPageFadingOut(true)
+      setBackgroundFadingOut(true)
 
-    if (stepNumber === 3 || stepNumber === 4) {
-      router.push(destination)
+      setTimeout(() => {
+        router.push("/reflect/6")
+      }, 2000)
       return
     }
 
+    // 1→2, 2→3, 3→4, 4→5: fade content only, background stays
     setPageFadingOut(true)
-    if (stepNumber >= 5) {
-      setBackgroundFadingOut(true)
-    }
 
     setTimeout(() => {
-      router.push(destination)
+      swapToStep(currentStep + 1)
     }, 2000)
   }
 
@@ -189,33 +206,23 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
     const { sessionId, reflections } = restoreSessionState()
 
     if (sessionId && reflection && userInput) {
-      saveReflection(sessionId, stepNumber, userInput, reflection)
-      persistSessionState(sessionId, stepNumber, reflections, false)
+      saveReflection(sessionId, currentStep, userInput, reflection)
+      persistSessionState(sessionId, currentStep, reflections, false)
     }
 
-    const shouldFade = stepNumber >= 6
-
-    if (stepNumber > 1) {
-      if (shouldFade) {
-        setPageFadingOut(true)
-        setBackgroundFadingOut(true)
-
-        setTimeout(() => {
-          router.push(`/reflect/${stepNumber - 1}`)
-        }, 2000)
-      } else {
-        router.push(`/reflect/${stepNumber - 1}`)
-      }
+    if (currentStep > 1) {
+      // 2→1, 3→2, 4→3, 5→4: instant, no fade
+      swapToStep(currentStep - 1)
     }
   }
 
-  if (!currentStep) {
+  if (!stepMeta) {
     router.push("/")
     return null
   }
 
   const backgroundIsShown = backgroundVisible && !backgroundFadingOut
-  const shouldUseContentTransition = stepNumber === 1 || stepNumber >= 6 || pageFadingOut
+  const shouldUseTransition = currentStep === 1 || pageFadingOut || backgroundFadingOut
 
   return (
     <>
@@ -225,15 +232,15 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
         className="reflection-page"
         style={{
           backgroundImage: isMobile
-            ? `url(${REFLECTION_STEPS[stepNumber - 1].background_mobile})`
-            : `url(${REFLECTION_STEPS[stepNumber - 1].background_desktop})`,
+            ? `url(${stepMeta.background_mobile})`
+            : `url(${stepMeta.background_desktop})`,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
           backgroundSize: "cover",
           backgroundAttachment: isMobile ? "scroll" : "fixed",
           filter: backgroundIsShown ? "blur(0px)" : "blur(20px)",
           opacity: backgroundIsShown ? 1 : 0,
-          transition: shouldUseContentTransition
+          transition: shouldUseTransition
             ? "filter 2000ms ease-out, opacity 2000ms ease-out"
             : "none",
         }}
@@ -241,30 +248,32 @@ function ReflectStepSingle({ stepNumber }: { stepNumber: number }) {
         <div
           className="absolute bottom-0 left-0 w-full h-[45%] sm:h-[50%] pointer-events-none"
           style={{
-            zIndex:-1,
+            zIndex: -1,
             background: `linear-gradient(to top, rgba(0,0,0,${
-              (90 - (stepNumber - 1) * 5) / 100
+              (90 - (currentStep - 1) * 5) / 100
             }), transparent)`,
           }}
         />
 
         <div
           className={`flex flex-col pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-6 sm:pb-8 ${
-            shouldUseContentTransition ? "transition-opacity duration-2000" : ""
+            shouldUseTransition ? "transition-opacity duration-2000" : ""
           } ${pageVisible && !pageFadingOut ? "opacity-100" : "opacity-0"}`}
         >
           <StepPrompt
-            label={currentStep.label}
-            prompt={currentStep.prompt}
+            key={`prompt-${currentStep}`}
+            label={stepMeta.label}
+            prompt={stepMeta.prompt}
             onPromptComplete={handlePromptComplete}
             isReloaded={isReloaded}
           />
 
           <ReflectionInput
+            key={`input-${currentStep}`}
             onSubmit={handleSubmitReflection}
             isLoading={isLoading}
             placeholder="You can write here… or simply sit for a moment"
-            stepNumber={stepNumber}
+            stepNumber={currentStep}
             reflection={reflection}
             onContinue={handleContinue}
             onBack={handleBack}
