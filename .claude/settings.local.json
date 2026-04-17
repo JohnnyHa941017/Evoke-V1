@@ -3,7 +3,9 @@
     "allow": [
       "Bash(grep -r \"border-white\\\\|opacity-\\\\|rgba\\\\|text-white\\\\|bg-white\" /e/Projects/EVOKE/Evoke-V1/components /e/Projects/EVOKE/Evoke-V1/app --include=*.tsx)",
       "Bash(grep -rn \"border-white\\\\|text-white\\\\|bg-white\\\\|placeholder:text-white\\\\|text-white/\" /e/Projects/EVOKE/Evoke-V1/components /e/Projects/EVOKE/Evoke-V1/app --include=*.tsx)",
-      "Bash(grep -rn \"opacity-\\\\[0\\\\]\\\\|opacity/\\\\[0\\\\]\\\\|opacity-0\\\\|text-transparent\" /e/Projects/EVOKE/Evoke-V1/components /e/Projects/EVOKE/Evoke-V1/app --include=*.tsx)"
+      "Bash(grep -rn \"opacity-\\\\[0\\\\]\\\\|opacity/\\\\[0\\\\]\\\\|opacity-0\\\\|text-transparent\" /e/Projects/EVOKE/Evoke-V1/components /e/Projects/EVOKE/Evoke-V1/app --include=*.tsx)",
+      "Bash(grep -B 5 -A 15 \"REFLECTION_STEPS\\\\[\" /e/Projects/EVOKE/Evoke-V1/app/reflect/[step]/page.tsx)",
+      "Bash(grep -n \"setTimeout\\\\|setPageFadingOut\\\\|setBackgroundFadingOut\" /e/Projects/EVOKE/Evoke-V1/app/reflect/[step]/page.tsx)"
     ]
   }
 }
