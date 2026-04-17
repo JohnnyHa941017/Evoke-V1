@@ -117,13 +117,6 @@
 .complete-page {
   background: url('/completeback.png') no-repeat center center;
   background-size: cover;
-  background-attachment: fixed;
-}
-
-@media (max-width: 768px) {
-  .complete-page {
-    background-attachment: scroll;
-  }
 }
 
 .reorientation-page {
