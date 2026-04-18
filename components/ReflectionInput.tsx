@@ -114,8 +114,9 @@ export function ReflectionInput({
               >
                 {echoRef.current && (
                   <p
-                    className="font-sans text-base sm:text-lg md:text-xl text-black tracking-wide whitespace-pre-wrap"
+                    className="block max-w-full font-sans text-base sm:text-lg md:text-xl text-black tracking-wide truncate"
                     style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
+                    title={echoRef.current}
                   >
                     {echoRef.current}
                   </p>
