@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
@@ -21,7 +21,7 @@ interface Props {
 export function ReflectSteps1To5({ initialStep }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const fadeOnEnter = searchParams.get("fade") === "1"
+  const fadeOnEnterRef = useRef(searchParams.get("fade") === "1")
 
   const [currentStep, setCurrentStep] = useState(initialStep)
   const [reflection, setReflection] = useState<string | null>(null)
@@ -52,7 +52,7 @@ export function ReflectSteps1To5({ initialStep }: Props) {
 
   // Initial mount only: match the current page's entry behavior for `initialStep`.
   useEffect(() => {
-    const shouldFadeOnEnter = initialStep === 1 || fadeOnEnter
+    const shouldFadeOnEnter = initialStep === 1 || fadeOnEnterRef.current
 
     setPageFadingOut(false)
     setBackgroundFadingOut(false)
@@ -117,7 +117,7 @@ export function ReflectSteps1To5({ initialStep }: Props) {
       if (contentTimer) clearTimeout(contentTimer)
       if (fadeDoneTimer) clearTimeout(fadeDoneTimer)
     }
-  }, [initialStep, router, fadeOnEnter])
+  }, [initialStep, router])
 
   function loadStepIntoState(targetStep: number) {
     const { reflections } = restoreSessionState()
