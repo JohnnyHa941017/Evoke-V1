@@ -136,16 +136,37 @@ export function ReflectSteps1To5({ initialStep }: Props) {
     }
   }
 
-  function swapToStep(targetStep: number) {
+  function swapToStep(targetStep: number, fadeIn: boolean = true) {
     window.history.replaceState(null, "", `/reflect/${targetStep}`)
     updateCurrentStep(targetStep)
     loadStepIntoState(targetStep)
     setCurrentStep(targetStep)
-    setPageFadingOut(false)
     setBackgroundFadingOut(false)
-    setPageVisible(true)
     setBackgroundVisible(true)
     setIsSubmitting(false)
+
+    if (!fadeIn) {
+      setPageFadingOut(false)
+      setPageVisible(true)
+      setInitialFadeInActive(false)
+      return
+    }
+
+    // Hold the wrapper at opacity 0 with the transition armed, then flip to
+    // visible on the next paint so opacity 0 → 1 animates instead of snapping.
+    setPageFadingOut(false)
+    setPageVisible(false)
+    setInitialFadeInActive(true)
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setPageVisible(true)
+      })
+    })
+
+    setTimeout(() => {
+      setInitialFadeInActive(false)
+    }, 2200)
   }
 
   function handlePromptComplete() {
@@ -223,7 +244,7 @@ export function ReflectSteps1To5({ initialStep }: Props) {
 
     if (currentStep > 1) {
       // 2→1, 3→2, 4→3, 5→4: instant, no fade
-      swapToStep(currentStep - 1)
+      swapToStep(currentStep - 1, false)
     }
   }
 
