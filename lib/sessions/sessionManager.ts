@@ -55,3 +55,7 @@ export function getReflections(sessionId: string): Reflection[] {
   if (!session) return []
   return session.reflections
 }
+
+export function deleteSession(sessionId: string): boolean {
+  return sessions.delete(sessionId)
+}

@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
 import { LayoutContainer } from "@/components/LayoutContainer"
-import { PrimaryButton } from "@/components/PrimaryButton"
 import { clearSessionData, markSessionCompleted } from "@/lib/persistence"
 
 const sentences = [
@@ -18,10 +17,14 @@ export default function CompletePage() {
   const router = useRouter()
   const [backgroundVisible, setBackgroundVisible] = useState(false)
   const [titleVisible, setTitleVisible] = useState(false)
+  const [leaveButtonVisible, setLeaveButtonVisible] = useState(false)
+  const [leaveButtonReady, setLeaveButtonReady] = useState(false)
+  const [leaving, setLeaving] = useState(false)
+  const [buttonFadingOut, setButtonFadingOut] = useState(false)
+  const [backgroundFadingOut, setBackgroundFadingOut] = useState(false)
   const [visibleWordCounts, setVisibleWordCounts] = useState<number[]>(() =>
     sentences.map(() => 0)
   )
-  const [buttonVisible, setButtonVisible] = useState(false)
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -51,33 +54,42 @@ export default function CompletePage() {
       nextTimerDelay += 2000 + Math.random() * 1000
     })
 
-    timers.push(setTimeout(() => setButtonVisible(true), lastWordRevealTime + 2000))
+    timers.push(setTimeout(() => setLeaveButtonVisible(true), lastWordRevealTime + 2000))
+    timers.push(setTimeout(() => setLeaveButtonReady(true), lastWordRevealTime + 4000))
 
     return () => timers.forEach((t) => clearTimeout(t))
   }, [])
 
-  function handleLeave() {
+  function handleLeaveClick() {
+    if (leaving) return
+    setLeaving(true)
     const sessionId = localStorage.getItem("evoke-session-id")
     if (sessionId) {
       markSessionCompleted(sessionId)
     }
     clearSessionData()
-    router.push("/")
+    setTimeout(() => setButtonFadingOut(true), 2000)
+    setTimeout(() => setBackgroundFadingOut(true), 4000)
+    setTimeout(() => router.push("/"), 6000)
   }
 
   return (
     <LayoutContainer
       className="complete-page"
       style={{
-        filter: backgroundVisible ? "blur(0px)" : "blur(20px)",
-        opacity: backgroundVisible ? 1 : 0,
+        filter: backgroundVisible && !backgroundFadingOut ? "blur(0px)" : "blur(20px)",
+        opacity: backgroundVisible && !backgroundFadingOut ? 1 : 0,
         transition: "filter 2000ms ease-out, opacity 2000ms ease-out",
       }}
     >
       <Header />
       <div className="absolute bottom-0 left-0 w-full h-[40%] sm:h-[50%] bg-gradient-to-t from-black/90 to-transparent pointer-events-none" />
 
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center">
+      <div
+        className={`flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center transition-opacity duration-2000 ${
+          !buttonFadingOut ? "opacity-100" : "opacity-0"
+        }`}
+      >
         {/* <p
           className="mb-6 sm:mb-4 md:mb-8 lg:mb-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-accent"
           style={{
@@ -121,14 +133,28 @@ export default function CompletePage() {
           })}
         </div>
 
-        <div
+        <button
+          onClick={handleLeaveClick}
+          disabled={leaving || !leaveButtonVisible}
+          aria-label={leaving ? "Leaving the space" : "Leave Space"}
+          className={`mt-6 sm:mt-8 md:mt-10 whitespace-nowrap rounded-full border-2 border-[#b8a88a] bg-[#b8a88a]/15 px-8 sm:px-12 py-3.5 sm:py-4 tracking-wide text-white disabled:cursor-default ${
+            leaveButtonReady && !leaving
+              ? "hover:bg-[#b8a88a]/30 hover:border-[#c4b89a]"
+              : ""
+          }`}
           style={{
-            opacity: buttonVisible ? 1 : 0,
-            transition: "opacity 2000ms ease-in",
+            fontFamily: "ITC Bradley Hand",
+            fontSize: "clamp(14px, 3.2vw, 22px)",
+            opacity: leaveButtonVisible ? 1 : 0,
+            pointerEvents: leaveButtonReady && !leaving ? "auto" : "none",
+            willChange: "opacity",
+            transform: "translateZ(0)",
+            transition:
+              "opacity 2000ms ease-out, background-color 300ms ease-out, border-color 300ms ease-out",
           }}
         >
-          <PrimaryButton onClick={handleLeave}>Leave Space</PrimaryButton>
-        </div>
+          {leaving ? "Leaving the space." : "Leave Space"}
+        </button>
       </div>
     </LayoutContainer>
   )
