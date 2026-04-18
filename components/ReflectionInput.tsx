@@ -74,7 +74,8 @@ export function ReflectionInput({
 
   function handleSubmit() {
     if (!userInput.trim() || isLoading) return
-    echoRef.current = userInput
+    const words = userInput.trim().replace(/\s+/g, " ").split(" ")
+    echoRef.current = words.length > 6 ? words.slice(0, 6).join(" ") + "…" : words.join(" ")
     setInputFadingOut(true)
     submitTimeRef.current = Date.now()
     onSubmit(userInput.trim())
@@ -114,9 +115,8 @@ export function ReflectionInput({
               >
                 {echoRef.current && (
                   <p
-                    className="block max-w-full font-sans text-base sm:text-lg md:text-xl text-black tracking-wide truncate"
+                    className="font-sans text-base sm:text-lg md:text-xl text-black tracking-wide"
                     style={{ opacity: echoVisible ? 1 : 0, transition: 'opacity 2000ms ease-out' }}
-                    title={echoRef.current}
                   >
                     {echoRef.current}
                   </p>
