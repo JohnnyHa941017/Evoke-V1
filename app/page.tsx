@@ -51,7 +51,11 @@ export default function ArrivalPage() {
         setModalContentVisible(false)
         setTimeout(() => {
           setModalPhase("choosing")
-          setModalContentVisible(true)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setModalContentVisible(true)
+            })
+          })
         }, 800)
       }, 3200)
       return
